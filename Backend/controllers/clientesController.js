@@ -7,6 +7,7 @@ exports.criarCliente = async (req, res) => {
     await db.query('INSERT INTO clientes (nome) VALUES (?)', [nome]);
     res.status(201).json({ message: 'Cliente cadastrado com sucesso!' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Erro ao cadastrar cliente' });
   }
 };
@@ -16,6 +17,7 @@ exports.listarClientes = async (req, res) => {
     const [results] = await db.query('SELECT * FROM clientes');
     res.json(results);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Erro ao listar clientes' });
   }
 };
