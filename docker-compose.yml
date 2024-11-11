@@ -1,0 +1,27 @@
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: senha
+      MYSQL_DATABASE: loja
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+  api:
+    build: ./backend
+    command: node app.js
+    volumes:
+      - ./backend:/usr/src/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+
+  frontend:
+    image: nginx:latest
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    ports:
+      - "8080:80"

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro de Clientes</title>
+</head>
+<body>
+  <h1>Cadastro de Clientes</h1>
+  <form id="cliente-form">
+    <input type="text" id="nome" placeholder="Nome do Cliente">
+    <button type="submit">Cadastrar</button>
+  </form>
+  <div id="resposta"></div>
+
+  <script>
+    document.getElementById('cliente-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value;
+
+      try {
+        const response = await fetch('http://localhost:3000/clientes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome })
+        });
+        const data = await response.json();
+        document.getElementById('resposta').textContent = data.message;
+      } catch (error) {
+        document.getElementById('resposta').textContent = 'Erro ao cadastrar cliente.';
+      }
+    });
+  </script>
+</body>
+</html>
