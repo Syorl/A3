@@ -5,18 +5,26 @@
   box-sizing: border-box;
 }
 
+/* Estilo do Corpo */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f8f8;
+  background: linear-gradient(to bottom, #d7eae9, #f0f8f8);
   color: #1a3d3d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
 }
 
+/* Container Geral */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
+/* Cabeçalho */
 header {
   text-align: center;
   margin-bottom: 30px;
@@ -24,70 +32,56 @@ header {
 
 header h1 {
   font-size: 2.5rem;
+  color: #1a3d3d;
 }
 
 header p {
   font-size: 1.2rem;
-  color: #555;
+  color: #5a7272;
 }
 
-/* Cards */
+/* Cards de Resumo */
 .card {
-  background-color: #1a3d3d;
-  color: #fff;
-  border-radius: 15px;
+  background-color: #ffffff;
+  color: #1a3d3d;
+  border-radius: 10px;
   padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
 }
 
 .card h2 {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
 }
 
-.card form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.card label {
-  display: flex;
-  flex-direction: column;
-  font-weight: bold;
-}
-
-.card input, .card textarea, .card select {
-  border: 2px solid #fff;
-  border-radius: 5px;
-  padding: 10px;
-  background-color: #f0f8f8;
-  color: #1a3d3d;
+.card p {
   font-size: 1rem;
+  color: #3a5b5b;
 }
 
+/* Botão */
 .card button {
-  background-color: #fff;
-  color: #1a3d3d;
+  background-color: #1a3d3d;
+  color: #ffffff;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 15px;
   border-radius: 5px;
-  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-weight: bold;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .card button:hover {
-  background-color: #e0f0f0;
+  background-color: #145555;
 }
 
-.alert {
-  margin-top: 20px;
-  color: #ffcc00;
-  font-weight: bold;
-}
-
-/* Tabela */
+/* Estilo da Tabela */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -96,13 +90,14 @@ table {
 
 table thead {
   background-color: #1a3d3d;
-  color: #fff;
+  color: #ffffff;
 }
 
-table th, table td {
+table th,
+table td {
   padding: 10px;
   text-align: left;
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
 }
 
 table tbody tr:nth-child(odd) {
@@ -110,5 +105,18 @@ table tbody tr:nth-child(odd) {
 }
 
 table tbody tr:nth-child(even) {
-  background-color: #e0f0f0;
+  background-color: #d7eae9;
+}
+
+table tbody tr:hover {
+  background-color: #cce7e7;
+  cursor: pointer;
+}
+
+/* Rodapé Opcional */
+footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #5a7272;
 }

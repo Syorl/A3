@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestão de Estoque</title>
-  <link rel="stylesheet" href="CSS/estoque_styles.css">
+  <link rel="stylesheet" href="../CSS/estoque_styles.css">
 </head>
 <body>
   <div class="container">
@@ -14,19 +14,42 @@
     </header>
 
     <main>
-      <!-- Cadastro de Produtos -->
-      <section class="card">
-        <h2>Cadastro de Produtos</h2>
-        <form>
-          <label>Nome do Produto: <input type="text" placeholder="Ex.: Notebook" /></label>
-          <label>Descrição: <textarea placeholder="Ex.: Notebook com 16GB RAM"></textarea></label>
-          <label>Categoria: <input type="text" placeholder="Ex.: Eletrônicos" /></label>
-          <label>Marca: <input type="text" placeholder="Ex.: Dell" /></label>
-          <label>Modelo: <input type="text" placeholder="Ex.: Inspiron 15" /></label>
-          <label>Especificações Técnicas: <textarea placeholder="Ex.: Processador i7, 512GB SSD"></textarea></label>
-          <button type="submit">Cadastrar Produto</button>
-        </form>
-      </section>
+     <!-- Cadastro de Produtos -->
+<section class="card">
+  <h2>Cadastro de Produtos</h2>
+  <form>
+    <label>Nome do Produto:
+      <input type="text" placeholder="Ex.: Notebook" required />
+    </label>
+    <label>Descrição:
+      <textarea placeholder="Ex.: Notebook com 16GB RAM"></textarea>
+    </label>
+    <label>Categoria:
+      <input type="text" placeholder="Ex.: Eletrônicos" />
+    </label>
+    <label>Marca:
+      <input type="text" placeholder="Ex.: Dell" />
+    </label>
+    <label>Modelo:
+      <input type="text" placeholder="Ex.: Inspiron 15" />
+    </label>
+    <label>Especificações Técnicas:
+      <textarea placeholder="Ex.: Processador i7, 512GB SSD"></textarea>
+    </label>
+    <label>Fornecedor:
+      <!-- Campo de seleção para fornecedores -->
+      <select required>
+        <option value="" disabled selected>Selecione um fornecedor</option>
+        <option value="1">TechSupplier</option>
+        <option value="2">Distribuidora Eletrônica</option>
+        <option value="3">Fornecedora Local</option>
+        <!-- Este campo será preenchido dinamicamente no sistema -->
+      </select>
+    </label>
+    <button type="submit">Cadastrar Produto</button>
+  </form>
+</section>
+
 
       <!-- Registro de Fornecedores -->
       <section class="card">
