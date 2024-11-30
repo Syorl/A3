@@ -1,6 +1,7 @@
 services:
   mysql:
     image: mysql:8
+    container_name: mysql_container
     environment:
       MYSQL_ROOT_PASSWORD: senha
       MYSQL_DATABASE: loja
@@ -11,6 +12,7 @@ services:
 
   api:
     build: ./backend
+    container_name: api_container
     command: node app.js
     volumes:
       - ./backend:/usr/src/app
@@ -21,6 +23,7 @@ services:
 
   frontend:
     image: nginx:latest
+    container_name: frontend_container
     volumes:
       - ./frontend:/usr/share/nginx/html
     ports:
