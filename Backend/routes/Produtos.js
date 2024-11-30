@@ -1,38 +1,32 @@
-const express = require('express');
-const router = express.Router();
-const { Pool } = require('pg');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../db");
 
-// Configuração do pool
-const pool = new Pool({
-  user: 'seu_usuario',
-  host: 'localhost',
-  database: 'seu_banco',
-  password: 'sua_senha',
-  port: 5432,
-});
-
-// Buscar todos os produtos
-router.get('/', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM Produto');
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+// Definir o modelo Produto
+const Produto = sequelize.define(
+  "Produto",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    nome: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    preco: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    estoque: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  },
+  {
+    tableName: "Produto", // Nome da tabela no banco de dados
+    timestamps: false, // Desativa os campos createdAt e updatedAt
   }
-});
+);
 
-// Adicionar um novo produto
-router.post('/', async (req, res) => {
-  const { nome, preco, estoque } = req.body;
-  try {
-    const result = await pool.query(
-      'INSERT INTO Produto (nome, preco, estoque) VALUES ($1, $2, $3) RETURNING *',
-      [nome, preco, estoque]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-module.exports = router;
+module.exports = Produto;

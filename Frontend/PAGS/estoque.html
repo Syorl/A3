@@ -14,63 +14,50 @@
     </header>
 
     <main>
-     <!-- Cadastro de Produtos -->
-<section class="card">
-  <h2>Cadastro de Produtos</h2>
-  <form>
-    <label>Nome do Produto:
-      <input type="text" placeholder="Ex.: Notebook" required />
-    </label>
-    <label>Descrição:
-      <textarea placeholder="Ex.: Notebook com 16GB RAM"></textarea>
-    </label>
-    <label>Categoria:
-      <input type="text" placeholder="Ex.: Eletrônicos" />
-    </label>
-    <label>Marca:
-      <input type="text" placeholder="Ex.: Dell" />
-    </label>
-    <label>Modelo:
-      <input type="text" placeholder="Ex.: Inspiron 15" />
-    </label>
-    <label>Especificações Técnicas:
-      <textarea placeholder="Ex.: Processador i7, 512GB SSD"></textarea>
-    </label>
-    <label>Fornecedor:
-      <!-- Campo de seleção para fornecedores -->
-      <select required>
-        <option value="" disabled selected>Selecione um fornecedor</option>
-        <option value="1">TechSupplier</option>
-        <option value="2">Distribuidora Eletrônica</option>
-        <option value="3">Fornecedora Local</option>
-        <!-- Este campo será preenchido dinamicamente no sistema -->
-      </select>
-    </label>
-    <button type="submit">Cadastrar Produto</button>
-  </form>
-</section>
-
-
-      <!-- Registro de Fornecedores -->
+      <!-- Cadastro de Produtos -->
       <section class="card">
-        <h2>Registro de Fornecedores</h2>
-        <form>
-          <label>Nome do Fornecedor: <input type="text" placeholder="Ex.: TechSupplier" /></label>
-          <label>CNPJ: <input type="text" placeholder="Ex.: 00.000.000/0000-00" /></label>
-          <label>Endereço: <input type="text" placeholder="Ex.: Rua Principal, 123" /></label>
-          <label>Contato: <input type="text" placeholder="Ex.: (11) 99999-9999" /></label>
-          <button type="submit">Registrar Fornecedor</button>
+        <h2>Cadastro de Produtos</h2>
+        <form id="product-form">
+          <label>Nome do Produto:
+            <input type="text" id="product-name" placeholder="Ex.: Notebook" required />
+          </label>
+          <label>Descrição:
+            <textarea id="product-description" placeholder="Ex.: Notebook com 16GB RAM"></textarea>
+          </label>
+          <label>Categoria:
+            <input type="text" id="product-category" placeholder="Ex.: Eletrônicos" />
+          </label>
+          <label>Marca:
+            <input type="text" id="product-brand" placeholder="Ex.: Dell" />
+          </label>
+          <label>Modelo:
+            <input type="text" id="product-model" placeholder="Ex.: Inspiron 15" />
+          </label>
+          <label>Especificações Técnicas:
+            <textarea id="product-specs" placeholder="Ex.: Processador i7, 512GB SSD"></textarea>
+          </label>
+          <label>Fornecedor:
+            <select id="product-supplier" required>
+              <option value="" disabled selected>Selecione um fornecedor</option>
+              <!-- Os fornecedores serão inseridos dinamicamente aqui -->
+            </select>
+          </label>
+          <button type="submit">Cadastrar Produto</button>
         </form>
       </section>
 
       <!-- Controle de Estoque -->
       <section class="card">
         <h2>Controle de Estoque</h2>
-        <form>
-          <label>Produto: <input type="text" placeholder="Ex.: Notebook Dell" /></label>
-          <label>Quantidade: <input type="number" placeholder="Ex.: 50" /></label>
-          <label>Tipo de Movimentação: 
-            <select>
+        <form id="stock-form">
+          <label>Produto: 
+            <input type="text" id="stock-product" placeholder="Ex.: Notebook Dell" required />
+          </label>
+          <label>Quantidade: 
+            <input type="number" id="stock-quantity" placeholder="Ex.: 50" required />
+          </label>
+          <label>Tipo de Movimentação:
+            <select id="movement-type">
               <option value="entrada">Entrada</option>
               <option value="saida">Saída</option>
             </select>
@@ -78,6 +65,24 @@
           <button type="submit">Registrar Movimentação</button>
         </form>
         <p class="alert">⚠️ Atenção: Estoque baixo para *Produto X*.</p>
+      </section>
+
+      <!-- Lista de Produtos no Estoque -->
+      <section class="card">
+        <h2>Produtos no Estoque</h2>
+        <table id="stock-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Quantidade</th>
+              <th>Editar</th>
+              <th>Excluir</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Os produtos serão inseridos dinamicamente aqui -->
+          </tbody>
+        </table>
       </section>
 
       <!-- Histórico de Movimentações -->
@@ -93,25 +98,149 @@
               <th>Tipo</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>20/11/2024</td>
-              <td>Notebook Dell</td>
-              <td>João Silva</td>
-              <td>10</td>
-              <td>Entrada</td>
-            </tr>
-            <tr>
-              <td>19/11/2024</td>
-              <td>Monitor Samsung</td>
-              <td>Maria Souza</td>
-              <td>-5</td>
-              <td>Saída</td>
-            </tr>
+          <tbody id="movement-history">
+            <!-- Histórico de movimentações será inserido dinamicamente -->
           </tbody>
         </table>
       </section>
     </main>
   </div>
+
+  <script>
+    const productForm = document.getElementById("product-form");
+    const stockForm = document.getElementById("stock-form");
+    const stockTable = document.getElementById("stock-table").getElementsByTagName("tbody")[0];
+    const movementHistory = document.getElementById("movement-history");
+    const supplierSelect = document.getElementById("product-supplier");
+
+    let products = [];
+    let movements = [];
+    
+    // Função para adicionar produto
+    productForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById("product-name").value;
+      const description = document.getElementById("product-description").value;
+      const category = document.getElementById("product-category").value;
+      const brand = document.getElementById("product-brand").value;
+      const model = document.getElementById("product-model").value;
+      const specs = document.getElementById("product-specs").value;
+      const supplier = document.getElementById("product-supplier").value;
+
+      const newProduct = { name, description, category, brand, model, specs, supplier };
+
+      // Envia os dados para o backend
+      const response = await fetch('http://localhost:3000/estoque/produtos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newProduct)
+      });
+
+      if (response.ok) {
+        alert('Produto cadastrado com sucesso');
+        displayProducts();
+        productForm.reset();
+      } else {
+        alert('Erro ao cadastrar produto');
+      }
+    });
+
+    // Função para exibir produtos na tabela
+    function displayProducts() {
+      stockTable.innerHTML = "";
+      products.forEach((product, index) => {
+        const row = stockTable.insertRow();
+        row.innerHTML = `
+          <td>${product.name}</td>
+          <td>${product.quantity}</td>
+          <td><button onclick="editProduct(${index})">Editar</button></td>
+          <td><button onclick="deleteProduct(${index})">Excluir</button></td>
+        `;
+      });
+    }
+    
+    // Função para editar produto
+    function editProduct(index) {
+      const product = products[index];
+      document.getElementById("product-name").value = product.name;
+      document.getElementById("product-description").value = product.description;
+      document.getElementById("product-category").value = product.category;
+      document.getElementById("product-brand").value = product.brand;
+      document.getElementById("product-model").value = product.model;
+      document.getElementById("product-specs").value = product.specs;
+      document.getElementById("product-supplier").value = product.supplier;
+      
+      products.splice(index, 1); // Remove o produto da lista temporariamente para edição
+    }
+    
+    // Função para excluir produto
+    function deleteProduct(index) {
+      products.splice(index, 1);
+      displayProducts();
+    }
+
+    // Função para registrar movimentação de estoque
+    stockForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+      
+      const productName = document.getElementById("stock-product").value;
+      const quantity = parseInt(document.getElementById("stock-quantity").value);
+      const type = document.getElementById("movement-type").value;
+      const responsible = 1; // Substitua pelo ID do funcionário responsável
+      
+      const movement = { productName, quantity, type, responsible };
+
+      // Envia os dados para o backend
+      const response = await fetch('http://localhost:3000/estoque/movimentacoes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(movement)
+      });
+
+      if (response.ok) {
+        alert('Movimentação registrada com sucesso');
+        displayMovementHistory();
+      } else {
+        alert('Erro ao registrar movimentação');
+      }
+    });
+
+    // Função para exibir histórico de movimentações
+    function displayMovementHistory() {
+      movementHistory.innerHTML = "";
+      movements.forEach(movement => {
+        const row = movementHistory.insertRow();
+        row.innerHTML = `
+          <td>${movement.date}</td>
+          <td>${movement.product}</td>
+          <td>${movement.responsible || "N/A"}</td>
+          <td>${movement.quantity}</td>
+          <td>${movement.type}</td>
+        `;
+      });
+    }
+
+    // Função para carregar fornecedores
+    async function loadSuppliers() {
+      const response = await fetch('http://localhost:3000/fornecedores');
+      const suppliers = await response.json();
+      suppliers.forEach(supplier => {
+        const option = document.createElement('option');
+        option.value = supplier.Id_For;
+        option.textContent = supplier.Nome;
+        supplierSelect.appendChild(option);
+      });
+    }
+
+    // Inicializa a lista de fornecedores ao carregar a página
+    window.onload = function() {
+      loadSuppliers();
+    };
+  </script>
 </body>
 </html>

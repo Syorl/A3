@@ -12,53 +12,176 @@
     <h1>Relatório de Produtos</h1>
   </header>
 
+  <!-- Relatório de Produtos Mais Vendidos -->
   <section>
-    <h2>Gráfico de Retiradas</h2>
-    <canvas id="productChart" width="400" height="200">
-        <div class="graph-container">
-            <h2>Gráfico de Produtos Retirados</h2>
-            <canvas id="productChart"></canvas>
-        </div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Produto</th>
-                    <th>Quantidade Retirada</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Produto A</td>
-                    <td>120</td>
-                </tr>
-                <tr>
-                    <td>Produto B</td>
-                    <td>80</td>
-                </tr>
-            </tbody>
-        </table>
-    </canvas>
-  </section>
-
-  <section>
-    <h2>Ranking de Produtos</h2>
-    <div id="ranking">
-      <table>
-        <thead>
-          <tr>
-            <th>Posição</th>
-            <th>Produto</th>
-            <th>Retiradas</th>
-          </tr>
-        </thead>
-        <tbody id="rankingTableBody">
-          <!-- Dados serão preenchidos dinamicamente -->
-        </tbody>
-      </table>
+    <h2>Relatório de Produtos Mais Vendidos</h2>
+    <div class="graph-container">
+      <h3>Gráfico de Produtos Mais Vendidos</h3>
+      <canvas id="bestSellingChart"></canvas>
     </div>
+    <table id="bestSellingTable">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Vendas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados serão preenchidos dinamicamente -->
+      </tbody>
+    </table>
   </section>
 
-  <script src="../JS/relatorioProdutos.js"></script>
+  <!-- Relatório de Produto por Cliente -->
+  <section>
+    <h2>Relatório de Produto por Cliente</h2>
+    <div class="graph-container">
+      <h3>Gráfico de Produtos por Cliente</h3>
+      <canvas id="productByCustomerChart"></canvas>
+    </div>
+    <table id="productByCustomerTable">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Produto</th>
+          <th>Quantidade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados serão preenchidos dinamicamente -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Relatório de Consumo Médio do Cliente -->
+  <section>
+    <h2>Relatório de Consumo Médio do Cliente</h2>
+    <div class="graph-container">
+      <h3>Gráfico de Consumo Médio por Cliente</h3>
+      <canvas id="avgConsumptionChart"></canvas>
+    </div>
+    <table id="avgConsumptionTable">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Consumo Médio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados serão preenchidos dinamicamente -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Relatório de Produtos com Baixo Estoque -->
+  <section>
+    <h2>Relatório de Produtos com Baixo Estoque</h2>
+    <div class="graph-container">
+      <h3>Gráfico de Produtos com Baixo Estoque</h3>
+      <canvas id="lowStockChart"></canvas>
+    </div>
+    <table id="lowStockTable">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Quantidade em Estoque</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dados serão preenchidos dinamicamente -->
+      </tbody>
+    </table>
+  </section>
+
+  <script>
+ document.addEventListener('DOMContentLoaded', async () => {
+  const ctxBestSelling = document.getElementById('bestSellingChart').getContext('2d');
+  const ctxProductByCustomer = document.getElementById('productByCustomerChart').getContext('2d');
+  const ctxAvgConsumption = document.getElementById('avgConsumptionChart').getContext('2d');
+  const ctxLowStock = document.getElementById('lowStockChart').getContext('2d');
+
+  // Fetch data from backend
+  const data = await fetch('http://localhost:3000/api/produtos/relatorio')
+    .then(res => res.json())
+    .catch(err => console.error('Erro ao buscar dados:', err));
+
+  // Produtos mais vendidos
+  const bestSellingProducts = data.bestSellingProducts;
+  const bestSellingLabels = bestSellingProducts.map(produto => produto.nome);
+  const bestSellingQuantities = bestSellingProducts.map(produto => produto.vendas);
+
+  const bestSellingChart = new Chart(ctxBestSelling, {
+    type: 'bar',
+    data: {
+      labels: bestSellingLabels,
+      datasets: [{
+        label: 'Vendas',
+        data: bestSellingQuantities,
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    }
+  });
+
+  // Produto por cliente
+  const productByCustomer = data.productByCustomer;
+  const customerLabels = productByCustomer.map(item => `${item.cliente} - ${item.produto}`);
+  const customerQuantities = productByCustomer.map(item => item.quantidade);
+
+  const productByCustomerChart = new Chart(ctxProductByCustomer, {
+    type: 'bar',
+    data: {
+      labels: customerLabels,
+      datasets: [{
+        label: 'Quantidade',
+        data: customerQuantities,
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    }
+  });
+
+  // Consumo médio por cliente
+  const avgConsumptionData = data.avgConsumption;
+  const avgConsumptionLabels = avgConsumptionData.map(item => item.cliente);
+  const avgConsumptionValues = avgConsumptionData.map(item => item.consumoMedio);
+
+  const avgConsumptionChart = new Chart(ctxAvgConsumption, {
+    type: 'line',
+    data: {
+      labels: avgConsumptionLabels,
+      datasets: [{
+        label: 'Consumo Médio',
+        data: avgConsumptionValues,
+        borderColor: 'rgba(153, 102, 255, 1)',
+        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+        borderWidth: 1
+      }]
+    }
+  });
+
+  // Produtos com baixo estoque
+  const lowStockProducts = data.lowStockProducts;
+  const lowStockLabels = lowStockProducts.map(produto => produto.nome);
+  const lowStockQuantities = lowStockProducts.map(produto => produto.estoque);
+
+  const lowStockChart = new Chart(ctxLowStock, {
+    type: 'bar',
+    data: {
+      labels: lowStockLabels,
+      datasets: [{
+        label: 'Estoque',
+        data: lowStockQuantities,
+        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+        borderColor: 'rgba(255, 159, 64, 1)',
+        borderWidth: 1
+      }]
+    }
+  });
+});
+
+  </script>
 </body>
 </html>

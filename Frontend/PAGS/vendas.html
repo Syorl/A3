@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Vendas</title>
+  <link rel="stylesheet" href="../CSS/vendas_styles.css">
+</head>
+<body>
+  <h1>Gerenciar Vendas</h1>
+  <form id="vendaForm">
+    <label for="cliente">Cliente:</label>
+    <select id="cliente" name="cliente" required>
+      <option value="" disabled selected>Selecione um cliente</option>
+      <!-- Clientes serão inseridos dinamicamente aqui -->
+    </select>
+
+    <label for="vendedor">Vendedor:</label>
+    <select id="vendedor" name="vendedor" required>
+      <option value="" disabled selected>Selecione um vendedor</option>
+      <!-- Vendedores serão inseridos dinamicamente aqui -->
+    </select>
+
+    <label for="produto">Produto:</label>
+    <select id="produto" name="produto" required>
+      <option value="" disabled selected>Selecione um produto</option>
+      <!-- Produtos serão inseridos dinamicamente aqui -->
+    </select>
+
+    <label for="quantidade">Quantidade:</label>
+    <input type="number" id="quantidade" name="quantidade" required>
+
+    <button type="submit">Registrar Venda</button>
+    <button type="button" id="updateVenda">Atualizar Venda</button>
+    <button type="button" id="deleteVenda">Cancelar Venda</button>
+  </form>
+
+  <h2>Lista de Vendas</h2>
+  <table id="vendasTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Vendedor</th>
+        <th>Produto</th>
+        <th>Quantidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Vendas serão inseridas dinamicamente aqui -->
+    </tbody>
+  </table>
+
+  <script>
+    const vendaForm = document.getElementById('vendaForm');
+    const updateVendaBtn = document.getElementById('updateVenda');
+    const deleteVendaBtn = document.getElementById('deleteVenda');
+    const vendasTable = document.getElementById('vendasTable').getElementsByTagName('tbody')[0];
+    const clienteSelect = document.getElementById('cliente');
+    const vendedorSelect = document.getElementById('vendedor');
+    const produtoSelect = document.getElementById('produto');
+
+    let selectedVendaId = null;
+
+    // Função para carregar clientes
+    async function loadClientes() {
+      const response = await fetch('http://localhost:3000/clientes');
+      const clientes = await response.json();
+      clientes.forEach(cliente => {
+        const option = document.createElement('option');
+        option.value = cliente.Id_Clie;
+        option.textContent = cliente.Nome;
+        clienteSelect.appendChild(option);
+      });
+    }
+
+    // Função para carregar vendedores
+    async function loadVendedores() {
+      const response = await fetch('http://localhost:3000/vendedores');
+      const vendedores = await response.json();
+      vendedores.forEach(vendedor => {
+        const option = document.createElement('option');
+        option.value = vendedor.Id_Vendedor;
+        option.textContent = vendedor.Nome;
+        vendedorSelect.appendChild(option);
+      });
+    }
+
+    // Função para carregar produtos do estoque
+    async function loadProdutos() {
+      const response = await fetch('http://localhost:3000/estoque/produtos');
+      const produtos = await response.json();
+      produtos.forEach(produto => {
+        const option = document.createElement('option');
+        option.value = produto.id;
+        option.textContent = `${produto.nome} (Quantidade: ${produto.quantidade})`;
+        produtoSelect.appendChild(option);
+      });
+    }
+
+    // Função para registrar venda
+    vendaForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const clienteId = document.getElementById('cliente').value;
+      const vendedorId = document.getElementById('vendedor').value;
+      const produtoId = document.getElementById('produto').value;
+      const quantidade = document.getElementById('quantidade').value;
+
+      const newVenda = { clienteId, vendedorId, produtoId, quantidade };
+
+      const response = await fetch('http://localhost:3000/vendas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newVenda)
+      });
+
+      if (response.ok) {
+        alert('Venda registrada com sucesso');
+        displayVendas();
+        vendaForm.reset();
+      } else {
+        alert('Erro ao registrar venda');
+      }
+    });
+
+    // Função para atualizar venda
+    updateVendaBtn.addEventListener('click', async () => {
+      if (selectedVendaId) {
+        const clienteId = document.getElementById('cliente').value;
+        const vendedorId = document.getElementById('vendedor').value;
+        const produtoId = document.getElementById('produto').value;
+        const quantidade = document.getElementById('quantidade').value;
+
+        const updatedVenda = { clienteId, vendedorId, produtoId, quantidade };
+
+        const response = await fetch(`http://localhost:3000/vendas/${selectedVendaId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedVenda)
+        });
+
+        if (response.ok) {
+          alert('Venda atualizada com sucesso');
+          displayVendas();
+          vendaForm.reset();
+          selectedVendaId = null;
+        } else {
+          alert('Erro ao atualizar venda');
+        }
+      } else {
+        alert('Selecione uma venda para atualizar');
+      }
+    });
+
+    // Função para cancelar venda
+    deleteVendaBtn.addEventListener('click', async () => {
+      if (selectedVendaId) {
+        const response = await fetch(`http://localhost:3000/vendas/${selectedVendaId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          alert('Venda cancelada com sucesso');
+          displayVendas();
+          vendaForm.reset();
+          selectedVendaId = null;
+        } else {
+          alert('Erro ao cancelar venda');
+        }
+      } else {
+        alert('Selecione uma venda para cancelar');
+      }
+    });
+
+    // Função para exibir vendas na tabela
+    async function displayVendas() {
+      const response = await fetch('http://localhost:3000/vendas');
+      const vendas = await response.json();
+
+      vendasTable.innerHTML = '';
+
+      vendas.forEach(venda => {
+        const row = vendasTable.insertRow();
+        row.addEventListener('click', () => {
+          selectedVendaId = venda.Id_Venda;
+          document.getElementById('cliente').value = venda.Id_Clie;
+          document.getElementById('vendedor').value = venda.Id_Vendedor;
+          document.getElementById('produto').value = venda.Id_Produto;
+          document.getElementById('quantidade').value = venda.Quantidade;
+        });
+
+        row.insertCell(0).textContent = venda.Id_Venda;
+        row.insertCell(1).textContent = venda.Cliente;
+        row.insertCell(2).textContent = venda.Vendedor;
+        row.insertCell(3).textContent = venda.Produto;
+        row.insertCell(4).textContent = venda.Quantidade;
+      });
+    }
+
+    // Inicializa a lista de clientes, vendedores, produtos e vendas ao carregar a página
+    window.onload = function() {
+      loadClientes();
+      loadVendedores();
+      loadProdutos();
+      displayVendas();
+    };
+  </script>
+</body>
+</html>

@@ -1,27 +1,26 @@
-// backend/app.js
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-
-// Carregar variáveis de ambiente
-dotenv.config();
-
-// Importação das rotas
-const clientesRouter = require('./routes/clientes');
-const vendedoresRouter = require('./routes/vendedores');
-const estoqueRouter = require('./routes/estoque');
-const vendasRouter = require('./routes/vendas');
-
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors"); // Middleware para permitir requests cross-origin
+const estoqueRoutes = require("./routes/estoque");
+const relatoriosRoutes = require("./routes/relatorios");
+const clientesRoutes = require("./routes/clientes");
+const fornecedoresRoutes = require("./routes/fornecedores");
+const vendedoresRoutes = require("./routes/vendedores");
+const vendasRoutes = require("./routes/vendas");
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json()); // Middleware para parsear JSON
+app.use(cors()); // Middleware para permitir requests cross-origin
 
-// Rotas
-app.use('/clientes', clientesRouter);
-app.use('/vendedores', vendedoresRouter);
-app.use('/estoque', estoqueRouter);
-app.use('/vendas', vendasRouter);
+// Adiciona as rotas de estoque, relatórios e clientes
+app.use("/estoque", estoqueRoutes);
+app.use("/api", relatoriosRoutes);
+app.use("/clientes", clientesRoutes);
+app.use("/fornecedores", fornecedoresRoutes);
+app.use("/vendedores", vendedoresRoutes);
+app.use("/vendas", vendasRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});

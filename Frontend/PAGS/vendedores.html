@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Vendedores</title>
+  <link rel="stylesheet" href="../CSS/vendedores_styles.css">
+</head>
+<body>
+  <h1>Gerenciar Vendedores</h1>
+  <form id="vendedorForm">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="cpf">CPF:</label>
+    <input type="text" id="cpf" name="cpf" required>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+
+    <button type="submit">Cadastrar Vendedor</button>
+    <button type="button" id="updateVendedor">Atualizar Vendedor</button>
+    <button type="button" id="deleteVendedor">Deletar Vendedor</button>
+  </form>
+
+  <h2>Lista de Vendedores</h2>
+  <table id="vendedoresTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CPF</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Vendedores serão inseridos dinamicamente aqui -->
+    </tbody>
+  </table>
+
+  <script>
+    const vendedorForm = document.getElementById('vendedorForm');
+    const updateVendedorBtn = document.getElementById('updateVendedor');
+    const deleteVendedorBtn = document.getElementById('deleteVendedor');
+    const vendedoresTable = document.getElementById('vendedoresTable').getElementsByTagName('tbody')[0];
+
+    let selectedVendedorId = null;
+
+    // Função para cadastrar vendedor
+    vendedorForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const nome = document.getElementById('nome').value;
+      const cpf = document.getElementById('cpf').value;
+      const email = document.getElementById('email').value;
+
+      const newVendedor = { nome, cpf, email };
+
+      const response = await fetch('http://localhost:3000/vendedores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newVendedor)
+      });
+
+      if (response.ok) {
+        alert('Vendedor cadastrado com sucesso');
+        displayVendedores();
+        vendedorForm.reset();
+      } else {
+        alert('Erro ao cadastrar vendedor');
+      }
+    });
+
+    // Função para atualizar vendedor
+    updateVendedorBtn.addEventListener('click', async () => {
+      if (selectedVendedorId) {
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const email = document.getElementById('email').value;
+
+        const updatedVendedor = { nome, cpf, email };
+
+        const response = await fetch(`http://localhost:3000/vendedores/${selectedVendedorId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedVendedor)
+        });
+
+        if (response.ok) {
+          alert('Vendedor atualizado com sucesso');
+          displayVendedores();
+          vendedorForm.reset();
+          selectedVendedorId = null;
+        } else {
+          alert('Erro ao atualizar vendedor');
+        }
+      } else {
+        alert('Selecione um vendedor para atualizar');
+      }
+    });
+
+    // Função para deletar vendedor
+    deleteVendedorBtn.addEventListener('click', async () => {
+      if (selectedVendedorId) {
+        const response = await fetch(`http://localhost:3000/vendedores/${selectedVendedorId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          alert('Vendedor deletado com sucesso');
+          displayVendedores();
+          vendedorForm.reset();
+          selectedVendedorId = null;
+        } else {
+          alert('Erro ao deletar vendedor');
+        }
+      } else {
+        alert('Selecione um vendedor para deletar');
+      }
+    });
+
+    // Função para exibir vendedores na tabela
+    async function displayVendedores() {
+      const response = await fetch('http://localhost:3000/vendedores');
+      const vendedores = await response.json();
+
+      vendedoresTable.innerHTML = '';
+
+      vendedores.forEach(vendedor => {
+        const row = vendedoresTable.insertRow();
+        row.addEventListener('click', () => {
+          selectedVendedorId = vendedor.Id_Vendedor;
+          document.getElementById('nome').value = vendedor.Nome;
+          document.getElementById('cpf').value = vendedor.CPF;
+          document.getElementById('email').value = vendedor.Email;
+        });
+
+        row.insertCell(0).textContent = vendedor.Id_Vendedor;
+        row.insertCell(1).textContent = vendedor.Nome;
+        row.insertCell(2).textContent = vendedor.CPF;
+        row.insertCell(3).textContent = vendedor.Email;
+      });
+    }
+
+    // Inicializa a tabela de vendedores ao carregar a página
+    window.onload = displayVendedores;
+  </script>
+</body>
+</html>

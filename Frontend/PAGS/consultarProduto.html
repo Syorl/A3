@@ -11,6 +11,10 @@
         <h1>Consultar Produtos</h1>
         <form id="consultaForm">
             <div class="form-group">
+                <label for="idProduto">ID do Produto</label>
+                <input type="text" id="idProduto" placeholder="Digite o ID do produto">
+            </div>
+            <div class="form-group">
                 <label for="nomeProduto">Nome do Produto</label>
                 <input type="text" id="nomeProduto" placeholder="Digite o nome do produto">
             </div>
@@ -21,6 +25,10 @@
             <div class="form-group">
                 <label for="categoriaProduto">Categoria do Produto</label>
                 <input type="text" id="categoriaProduto" placeholder="Digite a categoria do produto">
+            </div>
+            <div class="form-group">
+                <label for="fornecedorProduto">Fornecedor do Produto</label>
+                <input type="text" id="fornecedorProduto" placeholder="Digite o fornecedor do produto">
             </div>
             <button type="submit" class="btn">Consultar</button>
         </form>
@@ -48,12 +56,14 @@
         form.addEventListener('submit', async (event) => {
             event.preventDefault(); // Impede o envio do formulário
 
+            const idProduto = document.getElementById('idProduto').value;
             const nomeProduto = document.getElementById('nomeProduto').value;
             const marcaProduto = document.getElementById('marcaProduto').value;
             const categoriaProduto = document.getElementById('categoriaProduto').value;
+            const fornecedorProduto = document.getElementById('fornecedorProduto').value;
 
             // Faz uma requisição para o backend
-            const response = await fetch(`http://localhost:3000/produtos?nome=${nomeProduto}&marca=${marcaProduto}&categoria=${categoriaProduto}`);
+            const response = await fetch(`http://localhost:3000/estoque/produtos/consulta?id=${idProduto}&nome=${nomeProduto}&marca=${marcaProduto}&categoria=${categoriaProduto}&fornecedor=${fornecedorProduto}`);
             const produtos = await response.json();
 
             // Limpa os resultados anteriores

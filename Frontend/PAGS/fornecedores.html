@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciar Fornecedores</title>
+  <link rel="stylesheet" href="../CSS/fornecedores_styles.css">
+</head>
+<body>
+  <h1>Gerenciar Fornecedores</h1>
+  <form id="fornecedorForm">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required>
+
+    <label for="cnpj">CNPJ:</label>
+    <input type="text" id="cnpj" name="cnpj" required>
+
+    <label for="endereco">Endereço:</label>
+    <input type="text" id="endereco" name="endereco" required>
+
+    <button type="submit">Cadastrar Fornecedor</button>
+    <button type="button" id="updateFornecedor">Atualizar Fornecedor</button>
+    <button type="button" id="deleteFornecedor">Deletar Fornecedor</button>
+  </form>
+
+  <h2>Lista de Fornecedores</h2>
+  <table id="fornecedoresTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CNPJ</th>
+        <th>Endereço</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Fornecedores serão inseridos dinamicamente aqui -->
+    </tbody>
+  </table>
+
+  <script>
+    const fornecedorForm = document.getElementById('fornecedorForm');
+    const updateFornecedorBtn = document.getElementById('updateFornecedor');
+    const deleteFornecedorBtn = document.getElementById('deleteFornecedor');
+    const fornecedoresTable = document.getElementById('fornecedoresTable').getElementsByTagName('tbody')[0];
+
+    let selectedFornecedorId = null;
+
+    // Função para cadastrar fornecedor
+    fornecedorForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const nome = document.getElementById('nome').value;
+      const cnpj = document.getElementById('cnpj').value;
+      const endereco = document.getElementById('endereco').value;
+
+      const newFornecedor = { nome, cnpj, endereco };
+
+      const response = await fetch('http://localhost:3000/fornecedores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newFornecedor)
+      });
+
+      if (response.ok) {
+        alert('Fornecedor cadastrado com sucesso');
+        displayFornecedores();
+        fornecedorForm.reset();
+      } else {
+        alert('Erro ao cadastrar fornecedor');
+      }
+    });
+
+    // Função para atualizar fornecedor
+    updateFornecedorBtn.addEventListener('click', async () => {
+      if (selectedFornecedorId) {
+        const nome = document.getElementById('nome').value;
+        const cnpj = document.getElementById('cnpj').value;
+        const endereco = document.getElementById('endereco').value;
+
+        const updatedFornecedor = { nome, cnpj, endereco };
+
+        const response = await fetch(`http://localhost:3000/fornecedores/${selectedFornecedorId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedFornecedor)
+        });
+
+        if (response.ok) {
+          alert('Fornecedor atualizado com sucesso');
+          displayFornecedores();
+          fornecedorForm.reset();
+          selectedFornecedorId = null;
+        } else {
+          alert('Erro ao atualizar fornecedor');
+        }
+      } else {
+        alert('Selecione um fornecedor para atualizar');
+      }
+    });
+
+    // Função para deletar fornecedor
+    deleteFornecedorBtn.addEventListener('click', async () => {
+      if (selectedFornecedorId) {
+        const response = await fetch(`http://localhost:3000/fornecedores/${selectedFornecedorId}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          alert('Fornecedor deletado com sucesso');
+          displayFornecedores();
+          fornecedorForm.reset();
+          selectedFornecedorId = null;
+        } else {
+          alert('Erro ao deletar fornecedor');
+        }
+      } else {
+        alert('Selecione um fornecedor para deletar');
+      }
+    });
+
+    // Função para exibir fornecedores na tabela
+    async function displayFornecedores() {
+      const response = await fetch('http://localhost:3000/fornecedores');
+      const fornecedores = await response.json();
+
+      fornecedoresTable.innerHTML = '';
+
+      fornecedores.forEach(fornecedor => {
+        const row = fornecedoresTable.insertRow();
+        row.addEventListener('click', () => {
+          selectedFornecedorId = fornecedor.Id_For;
+          document.getElementById('nome').value = fornecedor.Nome;
+          document.getElementById('cnpj').value = fornecedor.CNPJ;
+          document.getElementById('endereco').value = fornecedor.Endereço;
+        });
+
+        row.insertCell(0).textContent = fornecedor.Id_For;
+        row.insertCell(1).textContent = fornecedor.Nome;
+        row.insertCell(2).textContent = fornecedor.CNPJ;
+        row.insertCell(3).textContent = fornecedor.Endereço;
+      });
+    }
+
+    // Inicializa a tabela de fornecedores ao carregar a página
+    window.onload = displayFornecedores;
+  </script>
+</body>
+</html>
