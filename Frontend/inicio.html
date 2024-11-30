@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Página Inicial</title>
+  <link rel="stylesheet" href="inicio_styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Bem-vindo ao Sistema</h1>
+      <p>Selecione uma opção abaixo para começar:</p>
+    </header>
+    
+    <div class="cards">
+      <div class="card" onclick="location.href='/estoque'">
+        <h3>Estoque</h3>
+        <p>Gerencie os produtos disponíveis</p>
+      </div>
+      <div class="card" onclick="location.href='/clientes'">
+        <h3>Clientes</h3>
+        <p>Visualize os dados dos clientes</p>
+      </div>
+      <div class="card" onclick="location.href='/vendedores'">
+        <h3>Vendedores</h3>
+        <p>Gerencie os vendedores cadastrados</p>
+      </div>
+      <div class="card" onclick="location.href='/relatorios'">
+        <h3>Relatório</h3>
+        <p>Visualize e gere relatórios</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
