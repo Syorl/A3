@@ -86,14 +86,14 @@
       });
     }
 
-    // Função para carregar produtos do estoque
+    // Função para carregar produtos
     async function loadProdutos() {
       const response = await fetch('http://localhost:3000/estoque/produtos');
       const produtos = await response.json();
       produtos.forEach(produto => {
         const option = document.createElement('option');
-        option.value = produto.id;
-        option.textContent = `${produto.nome} (Quantidade: ${produto.quantidade})`;
+        option.value = produto.Id_Prod;
+        option.textContent = `${produto.Nome} (Quantidade: ${produto.Quantidade})`;
         produtoSelect.appendChild(option);
       });
     }
@@ -190,7 +190,7 @@
           selectedVendaId = venda.Id_Venda;
           document.getElementById('cliente').value = venda.Id_Clie;
           document.getElementById('vendedor').value = venda.Id_Vendedor;
-          document.getElementById('produto').value = venda.Id_Produto;
+          document.getElementById('produto').value = venda.Id_Prod;
           document.getElementById('quantidade').value = venda.Quantidade;
         });
 
@@ -202,7 +202,7 @@
       });
     }
 
-    // Inicializa a lista de clientes, vendedores, produtos e vendas ao carregar a página
+    // Inicializa a lista de clientes, vendedores e vendas ao carregar a página
     window.onload = function() {
       loadClientes();
       loadVendedores();

@@ -1,12 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors"); // Middleware para permitir requests cross-origin
-const estoqueRoutes = require("./routes/estoque");
+const estoqueRoutes = require("../routes/estoque");
 const relatoriosRoutes = require("./routes/relatorios");
-const clientesRoutes = require("./routes/clientes");
-const fornecedoresRoutes = require("./routes/fornecedores");
-const vendedoresRoutes = require("./routes/vendedores");
-const vendasRoutes = require("./routes/vendas");
+const clientesRoutes = require("../routes/clientes");
+const fornecedoresRoutes = require("../routes/fornecedores");
+const vendedoresRoutes = require("../routes/vendedores");
+const vendasRoutes = require("../routes/vendas");
 const app = express();
 
 app.use(bodyParser.json()); // Middleware para parsear JSON
