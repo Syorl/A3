@@ -1,13 +1,14 @@
 const express = require("express");
+const port = 3000;
 const bodyParser = require("body-parser");
 const cors = require("cors"); // Middleware para permitir requests cross-origin
 const mysql = require("mysql2"); // Conexão com MySQL
-const estoqueRoutes = require("./routes/estoque");
-const relatoriosRoutes = require("./routes/relatorios");
-const clientesRoutes = require("./routes/clientes");
-const fornecedoresRoutes = require("./routes/fornecedores");
-const vendedoresRoutes = require("./routes/vendedores");
-const vendasRoutes = require("./routes/vendas");
+const estoqueRoutes = require("./Backend/routes/estoque");
+const relatoriosRoutes = require("./Backend/routes/relatorios");
+const clientesRoutes = require("./Backend/routes/clientes");
+const fornecedoresRoutes = require("./Backend/routes/fornecedores");
+const vendedoresRoutes = require("./Backend/routes/vendedores");
+const vendasRoutes = require("./Backend/routes/vendas");
 
 const app = express();
 
