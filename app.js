@@ -1,8 +1,10 @@
 const express = require("express");
-const port = 3000;
 const bodyParser = require("body-parser");
-const cors = require("cors"); // Middleware para permitir requests cross-origin
-const mysql = require("mysql2"); // Conexão com MySQL
+const cors = require("cors");
+const path = require("path");
+const { exec } = require("child_process");
+const db = require("./Backend/models/db");
+
 const estoqueRoutes = require("./Backend/routes/estoque");
 const relatoriosRoutes = require("./Backend/routes/relatorios");
 const clientesRoutes = require("./Backend/routes/clientes");
@@ -11,23 +13,6 @@ const vendedoresRoutes = require("./Backend/routes/vendedores");
 const vendasRoutes = require("./Backend/routes/vendas");
 
 const app = express();
-
-// Configuração de conexão com o banco de dados
-const db = mysql.createConnection({
-  host: "mysql", // Nome do serviço MySQL no docker-compose
-  user: "root",
-  password: "senha",
-  database: "loja",
-});
-
-// Verifica a conexão com o banco
-db.connect((err) => {
-  if (err) {
-    console.error("Erro ao conectar ao banco de dados:", err);
-    return;
-  }
-  console.log("Conectado ao banco de dados MySQL!");
-});
 
 // Middleware
 app.use(bodyParser.json());
@@ -41,10 +26,35 @@ app.use("/fornecedores", fornecedoresRoutes);
 app.use("/vendedores", vendedoresRoutes);
 app.use("/vendas", vendasRoutes);
 
+// Serve a página HTML
+app.use(express.static(path.join(__dirname, "Frontend")));
+
+// Função para verificar o status do Docker
+function checkDockerStatus() {
+  exec("docker info", (error, stdout, stderr) => {
+    if (error) {
+      console.error("Erro ao executar o comando:");
+      console.error(error.message);
+      console.error("Docker não está ativo ou ocorreu um erro.");
+      console.error(stderr);
+      return;
+    }
+    console.log("Docker está ativo.");
+
+  });
+}
+
 // Porta do servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Servidor rodando na porta ${PORT}`);
+  
+  // Verificar o status do Docker
+  checkDockerStatus();
+
+  // Importação dinâmica do módulo open e abrir a página HTML
+  const openModule = await import('open');
+  openModule.default(`http://localhost:${PORT}/Index.html`);
 });
 
 // Exporta o banco de dados para uso nas rotas

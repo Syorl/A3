@@ -62,7 +62,7 @@
 
       const newClient = { nome, cpf, endereco, email };
 
-      const response = await fetch('http://localhost:3000/clientes', {
+      const response = await fetch('/clientes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -89,7 +89,7 @@
 
         const updatedClient = { nome, cpf, endereco, email };
 
-        const response = await fetch(`http://localhost:3000/clientes/${selectedClientId}`, {
+        const response = await fetch(`/clientes/${selectedClientId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -113,7 +113,7 @@
     // Função para deletar cliente
     deleteClienteBtn.addEventListener('click', async () => {
       if (selectedClientId) {
-        const response = await fetch(`http://localhost:3000/clientes/${selectedClientId}`, {
+        const response = await fetch(`/clientes/${selectedClientId}`, {
           method: 'DELETE'
         });
 
@@ -132,7 +132,7 @@
 
     // Função para exibir clientes na tabela
     async function displayClientes() {
-      const response = await fetch('http://localhost:3000/clientes');
+      const response = await fetch('/clientes');
       const clientes = await response.json();
 
       clientesTable.innerHTML = '';

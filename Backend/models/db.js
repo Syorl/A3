@@ -1,28 +1,28 @@
-const mysql = require('mysql2/promise'); // Importa o módulo MySQL
-require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
+const mysql = require('mysql2/promise');
+require('dotenv').config();
 
-// Cria uma pool de conexões com o banco de dados
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT, // Porta definida no .env
+  port: process.env.DB_PORT || 3306,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  connectTimeout: 5000
 });
 
-// Função para testar a conexão
 async function testConnection() {
   try {
-    const connection = await pool.getConnection(); // Pega uma conexão do pool
+    const connection = await pool.getConnection();
     console.log('Conexão com o banco de dados estabelecida com sucesso.');
-    connection.release(); // Libera a conexão de volta ao pool
+    connection.release();
   } catch (error) {
     console.error('Erro ao conectar ao banco de dados:', error);
   }
 }
 
-// Teste a conexão ao inicializar o arquivo
 testConnection();
 
-// Exporta o pool para ser usado em outras partes do projeto
 module.exports = pool;
