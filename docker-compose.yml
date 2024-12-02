@@ -4,11 +4,13 @@ services:
     container_name: mysql_container
     environment:
       MYSQL_ROOT_PASSWORD: senha
-      MYSQL_DATABASE: loja
+      MYSQL_DATABASE: estoquebanco # Banco consistente com o .env
     ports:
       - "3306:3306"
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - app_network
 
   api:
     build: ./backend
@@ -18,8 +20,16 @@ services:
       - ./backend:/usr/src/app
     ports:
       - "3000:3000"
+    environment:
+      DB_HOST: mysql # Conectar usando o nome do serviço
+      DB_USER: root
+      DB_PASSWORD: senha
+      DB_NAME: estoquebanco
+      DB_PORT: 3306
     depends_on:
       - mysql
+    networks:
+      - app_network
 
   frontend:
     image: nginx:latest
@@ -28,3 +38,8 @@ services:
       - ./frontend:/usr/share/nginx/html
     ports:
       - "8080:80"
+    networks:
+      - app_network
+
+networks:
+  app_network:
