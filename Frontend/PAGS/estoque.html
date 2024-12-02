@@ -39,7 +39,6 @@
           <label>Fornecedor:
             <select id="product-supplier" required>
               <option value="" disabled selected>Selecione um fornecedor</option>
-              <!-- Os fornecedores serão inseridos dinamicamente aqui -->
             </select>
           </label>
           <button type="submit">Cadastrar Produto</button>
@@ -55,6 +54,9 @@
           </label>
           <label>Quantidade: 
             <input type="number" id="stock-quantity" placeholder="Ex.: 50" required />
+          </label>
+          <label>Valor (R$): 
+            <input type="number" id="stock-value" placeholder="Ex.: 2500.00" required />
           </label>
           <label>Tipo de Movimentação:
             <select id="movement-type">
@@ -75,6 +77,9 @@
             <tr>
               <th>Nome</th>
               <th>Quantidade</th>
+              <th>Valor</th>
+              <th>Data de Entrada</th>
+              <th>Data de Saída</th>
               <th>Editar</th>
               <th>Excluir</th>
             </tr>
@@ -95,6 +100,7 @@
               <th>Produto</th>
               <th>Responsável</th>
               <th>Quantidade</th>
+              <th>Valor</th>
               <th>Tipo</th>
             </tr>
           </thead>
@@ -113,134 +119,80 @@
     const movementHistory = document.getElementById("movement-history");
     const supplierSelect = document.getElementById("product-supplier");
 
-    let products = [];
     let movements = [];
-    
-    // Função para adicionar produto
-    productForm.addEventListener("submit", async function(event) {
-      event.preventDefault();
-      
-      const name = document.getElementById("product-name").value;
-      const description = document.getElementById("product-description").value;
-      const category = document.getElementById("product-category").value;
-      const brand = document.getElementById("product-brand").value;
-      const model = document.getElementById("product-model").value;
-      const specs = document.getElementById("product-specs").value;
-      const supplier = document.getElementById("product-supplier").value;
-
-      const newProduct = { name, description, category, brand, model, specs, supplier };
-
-      // Envia os dados para o backend
-      const response = await fetch('http://localhost:3000/estoque/produtos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newProduct)
-      });
-
-      if (response.ok) {
-        alert('Produto cadastrado com sucesso');
-        displayProducts();
-        productForm.reset();
-      } else {
-        alert('Erro ao cadastrar produto');
-      }
-    });
-
-    // Função para exibir produtos na tabela
-    function displayProducts() {
-      stockTable.innerHTML = "";
-      products.forEach((product, index) => {
-        const row = stockTable.insertRow();
-        row.innerHTML = `
-          <td>${product.name}</td>
-          <td>${product.quantity}</td>
-          <td><button onclick="editProduct(${index})">Editar</button></td>
-          <td><button onclick="deleteProduct(${index})">Excluir</button></td>
-        `;
-      });
-    }
-    
-    // Função para editar produto
-    function editProduct(index) {
-      const product = products[index];
-      document.getElementById("product-name").value = product.name;
-      document.getElementById("product-description").value = product.description;
-      document.getElementById("product-category").value = product.category;
-      document.getElementById("product-brand").value = product.brand;
-      document.getElementById("product-model").value = product.model;
-      document.getElementById("product-specs").value = product.specs;
-      document.getElementById("product-supplier").value = product.supplier;
-      
-      products.splice(index, 1); // Remove o produto da lista temporariamente para edição
-    }
-    
-    // Função para excluir produto
-    function deleteProduct(index) {
-      products.splice(index, 1);
-      displayProducts();
-    }
 
     // Função para registrar movimentação de estoque
     stockForm.addEventListener("submit", async function(event) {
       event.preventDefault();
-      
+
       const productName = document.getElementById("stock-product").value;
       const quantity = parseInt(document.getElementById("stock-quantity").value);
+      const value = parseFloat(document.getElementById("stock-value").value);
       const type = document.getElementById("movement-type").value;
-      const responsible = 1; // Substitua pelo ID do funcionário responsável
-      
-      const movement = { productName, quantity, type, responsible };
+      const responsible = "Admin"; // Substitua pelo ID do responsável
+      const currentDate = new Date();
 
-      // Envia os dados para o backend
-      const response = await fetch('http://localhost:3000/estoque/movimentacoes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(movement)
-      });
+      // Determina as datas com base no tipo
+      const entryDate = type === "entrada" ? currentDate.toLocaleString() : null;
+      const exitDate = type === "saida" ? currentDate.toLocaleString() : null;
 
-      if (response.ok) {
-        alert('Movimentação registrada com sucesso');
-        displayMovementHistory();
-      } else {
-        alert('Erro ao registrar movimentação');
-      }
+      const movement = { productName, quantity, value, type, responsible, entryDate, exitDate };
+      movements.push(movement);
+
+      alert("Movimentação registrada com sucesso");
+      displayMovementHistory();
+      displayProducts();
     });
 
     // Função para exibir histórico de movimentações
     function displayMovementHistory() {
       movementHistory.innerHTML = "";
-      movements.forEach(movement => {
+      movements.forEach((movement) => {
         const row = movementHistory.insertRow();
         row.innerHTML = `
-          <td>${movement.date}</td>
-          <td>${movement.product}</td>
-          <td>${movement.responsible || "N/A"}</td>
+          <td>${movement.entryDate || movement.exitDate || "N/A"}</td>
+          <td>${movement.productName}</td>
+          <td>${movement.responsible}</td>
           <td>${movement.quantity}</td>
+          <td>${movement.value ? `R$ ${movement.value.toFixed(2)}` : "N/A"}</td>
           <td>${movement.type}</td>
         `;
       });
     }
 
-    // Função para carregar fornecedores
-    async function loadSuppliers() {
-      const response = await fetch('http://localhost:3000/fornecedores');
-      const suppliers = await response.json();
-      suppliers.forEach(supplier => {
-        const option = document.createElement('option');
-        option.value = supplier.Id_For;
-        option.textContent = supplier.Nome;
-        supplierSelect.appendChild(option);
+    // Função para exibir produtos no estoque
+    function displayProducts() {
+      stockTable.innerHTML = "";
+      movements.forEach((movement) => {
+        const row = stockTable.insertRow();
+        row.innerHTML = `
+          <td>${movement.productName}</td>
+          <td>${movement.quantity}</td>
+          <td>R$ ${movement.value ? movement.value.toFixed(2) : "N/A"}</td>
+          <td>${movement.entryDate || "N/A"}</td>
+          <td>${movement.exitDate || "N/A"}</td>
+          <td><button onclick="editProduct('${movement.productName}')">Editar</button></td>
+          <td><button onclick="deleteProduct('${movement.productName}')">Excluir</button></td>
+        `;
       });
     }
 
-    // Inicializa a lista de fornecedores ao carregar a página
-    window.onload = function() {
-      loadSuppliers();
-    };
+    // Função para editar produto
+    function editProduct(productName) {
+      const movement = movements.find((m) => m.productName === productName);
+      if (movement) {
+        document.getElementById("stock-product").value = movement.productName;
+        document.getElementById("stock-quantity").value = movement.quantity;
+        document.getElementById("stock-value").value = movement.value;
+        document.getElementById("movement-type").value = movement.type;
+      }
+    }
+
+    // Função para excluir produto
+    function deleteProduct(productName) {
+      movements = movements.filter((m) => m.productName !== productName);
+      displayProducts();
+    }
   </script>
 </body>
 </html>

@@ -4,7 +4,8 @@ services:
     container_name: mysql_container
     environment:
       MYSQL_ROOT_PASSWORD: senha
-      MYSQL_DATABASE: loja
+      MYSQL_DATABASE: estoquebanco
+    # porta do banco
     ports:
       - "3306:3306"
     volumes:
@@ -16,6 +17,7 @@ services:
     command: node app.js
     volumes:
       - ./backend:/usr/src/app
+      # porta do back
     ports:
       - "3000:3000"
     depends_on:
