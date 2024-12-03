@@ -46,16 +46,15 @@ const vendedoresRoutes = require("./routes/vendedoresRoutes");
 const pedidosRoutes = require("./routes/pedidosRoutes");
 const estoqueRoutes = require("./routes/estoqueRoutes");
 const relatoriosRoutes = require("./routes/relatoriosRoutes");
-
 // Uso das Rotas
-// Uso das Rotas (ajuste para rota '/api' mais organizada)
-app.use("/controllers/clientes", clientesRoutes);
-app.use("/controllers/fornecedores", fornecedoresRoutes);
-app.use("/controllers/produtos", produtosRoutes); // Corrigir rota se necessário
-app.use("/controllers/vendedores", vendedoresRoutes);
-app.use("/controllers/pedidos", pedidosRoutes); // Corrigir erro de "pedidoss"
-app.use("/controllers/estoque", estoqueRoutes);
-app.use('/controllers/produtos', relatoriosRoutes);
+app.use("/clientes", clientesRoutes);
+app.use("/fornecedores", fornecedoresRoutes);
+app.use("/produtos", produtosRoutes);
+app.use("/vendedores", vendedoresRoutes);
+app.use("/pedidoss", pedidosRoutes);
+app.use("/estoque", estoqueRoutes);
+app.use("/relatorio", relatoriosRoutes);
+
 
 
 // Servir arquivos estáticos da pasta Frontend
