@@ -1,15 +1,11 @@
+version: '3'
 services:
   mysql:
     image: mysql:8
     container_name: mysql_container
     environment:
       MYSQL_ROOT_PASSWORD: senha
-# Banco consistente com o .env
       MYSQL_DATABASE: estoquebanco
-    # porta do banco
-
-     
-
     ports:
       - "3306:3306"
     volumes:
@@ -18,16 +14,16 @@ services:
       - app_network
 
   api:
-    build: ./backend
+    build:
+      context: ./backend
     container_name: api_container
     command: node app.js
     volumes:
       - ./backend:/usr/src/app
-      # porta do back
     ports:
       - "3000:3000"
     environment:
-      DB_HOST: mysql # Conectar usando o nome do serviço
+      DB_HOST: mysql  # Certifique-se de que o nome do serviço está correto
       DB_USER: root
       DB_PASSWORD: senha
       DB_NAME: estoquebanco
