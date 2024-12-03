@@ -1,47 +1,13 @@
-version: '3'
+version: '3.8'
 services:
-  mysql:
-    image: mysql:8
-    container_name: mysql_container
-    environment:
-      MYSQL_ROOT_PASSWORD: senha
-      MYSQL_DATABASE: estoquebanco
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./db:/docker-entrypoint-initdb.d
-    networks:
-      - app_network
-
-  api:
-    build:
-      context: ./backend
-    container_name: api_container
-    command: node app.js
-    volumes:
-      - ./backend:/usr/src/app
+  app:
+    build: .
+    container_name: app-1
     ports:
       - "3000:3000"
-    environment:
-      DB_HOST: mysql  # Certifique-se de que o nome do serviço está correto
-      DB_USER: root
-      DB_PASSWORD: senha
-      DB_NAME: estoquebanco
-      DB_PORT: 3306
-    depends_on:
-      - mysql
     networks:
-      - app_network
-
-  frontend:
-    image: nginx:latest
-    container_name: frontend_container
-    volumes:
-      - ./frontend:/usr/share/nginx/html
-    ports:
-      - "8080:80"
-    networks:
-      - app_network
+      - backend
 
 networks:
-  app_network:
+  backend:
+    driver: bridge

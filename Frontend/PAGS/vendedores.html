@@ -133,16 +133,16 @@
       vendedores.forEach(vendedor => {
         const row = vendedoresTable.insertRow();
         row.addEventListener('click', () => {
-          selectedVendedorId = vendedor.Id_Vendedor;
-          document.getElementById('nome').value = vendedor.Nome;
-          document.getElementById('cpf').value = vendedor.CPF;
-          document.getElementById('email').value = vendedor.Email;
+          selectedVendedorId = vendedor.id_vendedor;
+          document.getElementById('nome').value = vendedor.nome;
+          document.getElementById('cpf').value = vendedor.cpf;
+          document.getElementById('email').value = vendedor.email;
         });
 
-        row.insertCell(0).textContent = vendedor.Id_Vendedor;
-        row.insertCell(1).textContent = vendedor.Nome;
-        row.insertCell(2).textContent = vendedor.CPF;
-        row.insertCell(3).textContent = vendedor.Email;
+        row.insertCell(0).textContent = vendedor.id_vendedor;
+        row.insertCell(1).textContent = vendedor.nome;
+        row.insertCell(2).textContent = vendedor.cpf;
+        row.insertCell(3).textContent = vendedor.email;
       });
     }
 

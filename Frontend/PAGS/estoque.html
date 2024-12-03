@@ -121,28 +121,41 @@
 
     let movements = [];
 
-    // Função para registrar movimentação de estoque
-    stockForm.addEventListener("submit", async function(event) {
-      event.preventDefault();
+    
 
-      const productName = document.getElementById("stock-product").value;
-      const quantity = parseInt(document.getElementById("stock-quantity").value);
-      const value = parseFloat(document.getElementById("stock-value").value);
-      const type = document.getElementById("movement-type").value;
-      const responsible = "Admin"; // Substitua pelo ID do responsável
-      const currentDate = new Date();
+   // Função para registrar movimentação de estoque
+stockForm.addEventListener("submit", async function(event) {
+  event.preventDefault();
 
-      // Determina as datas com base no tipo
-      const entryDate = type === "entrada" ? currentDate.toLocaleString() : null;
-      const exitDate = type === "saida" ? currentDate.toLocaleString() : null;
+  const productId = document.getElementById("stock-product").value; // Certifique-se de que o ID do produto está sendo usado
+  const quantity = parseInt(document.getElementById("stock-quantity").value);
+  const value = parseFloat(document.getElementById("stock-value").value);
+  const type = document.getElementById("movement-type").value;
+  const responsible = "Admin"; // Substitua pelo ID do responsável
 
-      const movement = { productName, quantity, value, type, responsible, entryDate, exitDate };
-      movements.push(movement);
+  const response = await fetch('/produtos/movimentacao', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      id_produto: productId,
+      tipo_movimentacao: type,
+      quantidade: quantity,
+      valor: value,
+      responsavel: responsible
+    })
+  });
 
-      alert("Movimentação registrada com sucesso");
-      displayMovementHistory();
-      displayProducts();
-    });
+  if (response.ok) {
+    alert("Movimentação registrada com sucesso");
+    displayMovementHistory();
+    displayProducts();
+  } else {
+    alert("Erro ao registrar movimentação");
+  }
+});
+
 
     // Função para exibir histórico de movimentações
     function displayMovementHistory() {

@@ -56,7 +56,7 @@
 
       const newFornecedor = { nome, cnpj, endereco };
 
-      const response = await fetch('http://localhost:3000/fornecedores', {
+      const response = await fetch('/fornecedores', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -82,7 +82,7 @@
 
         const updatedFornecedor = { nome, cnpj, endereco };
 
-        const response = await fetch(`http://localhost:3000/fornecedores/${selectedFornecedorId}`, {
+        const response = await fetch(`/fornecedores/${selectedFornecedorId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -106,7 +106,7 @@
     // Função para deletar fornecedor
     deleteFornecedorBtn.addEventListener('click', async () => {
       if (selectedFornecedorId) {
-        const response = await fetch(`http://localhost:3000/fornecedores/${selectedFornecedorId}`, {
+        const response = await fetch(`/fornecedores/${selectedFornecedorId}`, {
           method: 'DELETE'
         });
 
@@ -125,7 +125,7 @@
 
     // Função para exibir fornecedores na tabela
     async function displayFornecedores() {
-      const response = await fetch('http://localhost:3000/fornecedores');
+      const response = await fetch('/fornecedores');
       const fornecedores = await response.json();
 
       fornecedoresTable.innerHTML = '';
@@ -133,16 +133,16 @@
       fornecedores.forEach(fornecedor => {
         const row = fornecedoresTable.insertRow();
         row.addEventListener('click', () => {
-          selectedFornecedorId = fornecedor.Id_For;
-          document.getElementById('nome').value = fornecedor.Nome;
-          document.getElementById('cnpj').value = fornecedor.CNPJ;
-          document.getElementById('endereco').value = fornecedor.Endereço;
+          selectedFornecedorId = fornecedor.id_fornecedor;
+          document.getElementById('nome').value = fornecedor.nome;
+          document.getElementById('cnpj').value = fornecedor.cnpj;
+          document.getElementById('endereco').value = fornecedor.endereco;
         });
 
-        row.insertCell(0).textContent = fornecedor.Id_For;
-        row.insertCell(1).textContent = fornecedor.Nome;
-        row.insertCell(2).textContent = fornecedor.CNPJ;
-        row.insertCell(3).textContent = fornecedor.Endereço;
+        row.insertCell(0).textContent = fornecedor.id_fornecedor;
+        row.insertCell(1).textContent = fornecedor.nome;
+        row.insertCell(2).textContent = fornecedor.cnpj;
+        row.insertCell(3).textContent = fornecedor.endereco;
       });
     }
 

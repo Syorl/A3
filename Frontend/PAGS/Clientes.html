@@ -35,7 +35,6 @@
         <th>CPF</th>
         <th>Endereço</th>
         <th>Email</th>
-        <th>Produtos Adquiridos</th>
       </tr>
     </thead>
     <tbody>
@@ -140,19 +139,18 @@
       clientes.forEach(cliente => {
         const row = clientesTable.insertRow();
         row.addEventListener('click', () => {
-          selectedClientId = cliente.Id_Clie;
-          document.getElementById('nome').value = cliente.Nome;
-          document.getElementById('cpf').value = cliente.CPF;
-          document.getElementById('endereco').value = cliente.Endereço;
-          document.getElementById('email').value = cliente.Email;
+          selectedClientId = cliente.id_cliente;
+          document.getElementById('nome').value = cliente.nome;
+          document.getElementById('cpf').value = cliente.cpf;
+          document.getElementById('endereco').value = cliente.endereco;
+          document.getElementById('email').value = cliente.email;
         });
 
-        row.insertCell(0).textContent = cliente.Id_Clie;
-        row.insertCell(1).textContent = cliente.Nome;
-        row.insertCell(2).textContent = cliente.CPF;
-        row.insertCell(3).textContent = cliente.Endereço;
-        row.insertCell(4).textContent = cliente.Email;
-        row.insertCell(5).textContent = cliente.produtosAdquiridos;
+        row.insertCell(0).textContent = cliente.id_cliente;
+        row.insertCell(1).textContent = cliente.nome;
+        row.insertCell(2).textContent = cliente.cpf;
+        row.insertCell(3).textContent = cliente.endereco;
+        row.insertCell(4).textContent = cliente.email;
       });
     }
 

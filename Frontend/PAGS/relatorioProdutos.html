@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Relatório de Produtos</title>
   <link rel="stylesheet" href="../CSS/relatorioProdutos_styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
@@ -15,10 +14,6 @@
   <!-- Relatório de Produtos Mais Vendidos -->
   <section>
     <h2>Relatório de Produtos Mais Vendidos</h2>
-    <div class="graph-container">
-      <h3>Gráfico de Produtos Mais Vendidos</h3>
-      <canvas id="bestSellingChart"></canvas>
-    </div>
     <table id="bestSellingTable">
       <thead>
         <tr>
@@ -35,10 +30,6 @@
   <!-- Relatório de Produto por Cliente -->
   <section>
     <h2>Relatório de Produto por Cliente</h2>
-    <div class="graph-container">
-      <h3>Gráfico de Produtos por Cliente</h3>
-      <canvas id="productByCustomerChart"></canvas>
-    </div>
     <table id="productByCustomerTable">
       <thead>
         <tr>
@@ -56,10 +47,6 @@
   <!-- Relatório de Consumo Médio do Cliente -->
   <section>
     <h2>Relatório de Consumo Médio do Cliente</h2>
-    <div class="graph-container">
-      <h3>Gráfico de Consumo Médio por Cliente</h3>
-      <canvas id="avgConsumptionChart"></canvas>
-    </div>
     <table id="avgConsumptionTable">
       <thead>
         <tr>
@@ -76,10 +63,6 @@
   <!-- Relatório de Produtos com Baixo Estoque -->
   <section>
     <h2>Relatório de Produtos com Baixo Estoque</h2>
-    <div class="graph-container">
-      <h3>Gráfico de Produtos com Baixo Estoque</h3>
-      <canvas id="lowStockChart"></canvas>
-    </div>
     <table id="lowStockTable">
       <thead>
         <tr>
@@ -94,94 +77,70 @@
   </section>
 
   <script>
- document.addEventListener('DOMContentLoaded', async () => {
-  const ctxBestSelling = document.getElementById('bestSellingChart').getContext('2d');
-  const ctxProductByCustomer = document.getElementById('productByCustomerChart').getContext('2d');
-  const ctxAvgConsumption = document.getElementById('avgConsumptionChart').getContext('2d');
-  const ctxLowStock = document.getElementById('lowStockChart').getContext('2d');
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Função para buscar os dados do controlador
+      const fetchData = async () => {
+        try {
+          const response = await fetch('../controllers/relatorioController.js');
+          if (!response.ok) {
+            throw new Error('Erro ao buscar dados');
+          }
+          return await response.json();
+        } catch (error) {
+          console.error('Erro ao buscar dados:', error);
+          return null;
+        }
+      };
 
-  // Fetch data from backend
-  const data = await fetch('http://localhost:3000/api/produtos/relatorio')
-    .then(res => res.json())
-    .catch(err => console.error('Erro ao buscar dados:', err));
+      const data = await fetchData();
+      if (data) {
+        // Produtos mais vendidos
+        const bestSellingProducts = data.bestSellingProducts;
+        const bestSellingTableBody = document.getElementById('bestSellingTable').getElementsByTagName('tbody')[0];
+        bestSellingProducts.forEach(produto => {
+          const row = bestSellingTableBody.insertRow();
+          const cellNome = row.insertCell(0);
+          const cellVendas = row.insertCell(1);
+          cellNome.textContent = produto.nome;
+          cellVendas.textContent = produto.vendas;
+        });
 
-  // Produtos mais vendidos
-  const bestSellingProducts = data.bestSellingProducts;
-  const bestSellingLabels = bestSellingProducts.map(produto => produto.nome);
-  const bestSellingQuantities = bestSellingProducts.map(produto => produto.vendas);
+        // Produto por cliente
+        const productByCustomer = data.productByCustomer;
+        const productByCustomerTableBody = document.getElementById('productByCustomerTable').getElementsByTagName('tbody')[0];
+        productByCustomer.forEach(item => {
+          const row = productByCustomerTableBody.insertRow();
+          const cellCliente = row.insertCell(0);
+          const cellProduto = row.insertCell(1);
+          const cellQuantidade = row.insertCell(2);
+          cellCliente.textContent = item.cliente;
+          cellProduto.textContent = item.produto;
+          cellQuantidade.textContent = item.quantidade;
+        });
 
-  const bestSellingChart = new Chart(ctxBestSelling, {
-    type: 'bar',
-    data: {
-      labels: bestSellingLabels,
-      datasets: [{
-        label: 'Vendas',
-        data: bestSellingQuantities,
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 1
-      }]
-    }
-  });
+        // Consumo médio por cliente
+        const avgConsumptionData = data.avgConsumption;
+        const avgConsumptionTableBody = document.getElementById('avgConsumptionTable').getElementsByTagName('tbody')[0];
+        avgConsumptionData.forEach(item => {
+          const row = avgConsumptionTableBody.insertRow();
+          const cellCliente = row.insertCell(0);
+          const cellConsumoMedio = row.insertCell(1);
+          cellCliente.textContent = item.cliente;
+          cellConsumoMedio.textContent = item.consumoMedio;
+        });
 
-  // Produto por cliente
-  const productByCustomer = data.productByCustomer;
-  const customerLabels = productByCustomer.map(item => `${item.cliente} - ${item.produto}`);
-  const customerQuantities = productByCustomer.map(item => item.quantidade);
-
-  const productByCustomerChart = new Chart(ctxProductByCustomer, {
-    type: 'bar',
-    data: {
-      labels: customerLabels,
-      datasets: [{
-        label: 'Quantidade',
-        data: customerQuantities,
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1
-      }]
-    }
-  });
-
-  // Consumo médio por cliente
-  const avgConsumptionData = data.avgConsumption;
-  const avgConsumptionLabels = avgConsumptionData.map(item => item.cliente);
-  const avgConsumptionValues = avgConsumptionData.map(item => item.consumoMedio);
-
-  const avgConsumptionChart = new Chart(ctxAvgConsumption, {
-    type: 'line',
-    data: {
-      labels: avgConsumptionLabels,
-      datasets: [{
-        label: 'Consumo Médio',
-        data: avgConsumptionValues,
-        borderColor: 'rgba(153, 102, 255, 1)',
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-        borderWidth: 1
-      }]
-    }
-  });
-
-  // Produtos com baixo estoque
-  const lowStockProducts = data.lowStockProducts;
-  const lowStockLabels = lowStockProducts.map(produto => produto.nome);
-  const lowStockQuantities = lowStockProducts.map(produto => produto.estoque);
-
-  const lowStockChart = new Chart(ctxLowStock, {
-    type: 'bar',
-    data: {
-      labels: lowStockLabels,
-      datasets: [{
-        label: 'Estoque',
-        data: lowStockQuantities,
-        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-        borderColor: 'rgba(255, 159, 64, 1)',
-        borderWidth: 1
-      }]
-    }
-  });
-});
-
+        // Produtos com baixo estoque
+        const lowStockProducts = data.lowStockProducts;
+        const lowStockTableBody = document.getElementById('lowStockTable').getElementsByTagName('tbody')[0];
+        lowStockProducts.forEach(produto => {
+          const row = lowStockTableBody.insertRow();
+          const cellProduto = row.insertCell(0);
+          const cellEstoque = row.insertCell(1);
+          cellProduto.textContent = produto.nome;
+          cellEstoque.textContent = produto.estoque;
+        });
+      }
+    });
   </script>
 </body>
 </html>

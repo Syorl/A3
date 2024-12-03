@@ -1,84 +1,100 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consultar Produtos</title>
-    <link rel="stylesheet" href="../CSS/consultarProdutos_styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultar Produtos</title>
+  <link rel="stylesheet" href="../CSS/consultarProdutos_styles.css">
 </head>
 <body>
-    <div class="form-container">
-        <h1>Consultar Produtos</h1>
-        <form id="consultaForm">
-            <div class="form-group">
-                <label for="idProduto">ID do Produto</label>
-                <input type="text" id="idProduto" placeholder="Digite o ID do produto">
-            </div>
-            <div class="form-group">
-                <label for="nomeProduto">Nome do Produto</label>
-                <input type="text" id="nomeProduto" placeholder="Digite o nome do produto">
-            </div>
-            <div class="form-group">
-                <label for="marcaProduto">Marca do Produto</label>
-                <input type="text" id="marcaProduto" placeholder="Digite a marca do produto">
-            </div>
-            <div class="form-group">
-                <label for="categoriaProduto">Categoria do Produto</label>
-                <input type="text" id="categoriaProduto" placeholder="Digite a categoria do produto">
-            </div>
-            <div class="form-group">
-                <label for="fornecedorProduto">Fornecedor do Produto</label>
-                <input type="text" id="fornecedorProduto" placeholder="Digite o fornecedor do produto">
-            </div>
-            <button type="submit" class="btn">Consultar</button>
-        </form>
-    </div>
-    <div>
-        <table id="resultados">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Marca</th>
-                    <th>Categoria</th>
-                    <th>Fornecedor</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Resultados serão exibidos aqui -->
-            </tbody>
-        </table>
-    </div>
-    <script>
-        const form = document.getElementById('consultaForm');
-        const resultados = document.getElementById('resultados').getElementsByTagName('tbody')[0];
+  <h1>Consultar Produtos</h1>
+  <form id="produtoForm">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome">
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Impede o envio do formulário
+    <label for="categoria">Categoria:</label>
+    <input type="text" id="categoria" name="categoria">
 
-            const idProduto = document.getElementById('idProduto').value;
-            const nomeProduto = document.getElementById('nomeProduto').value;
-            const marcaProduto = document.getElementById('marcaProduto').value;
-            const categoriaProduto = document.getElementById('categoriaProduto').value;
-            const fornecedorProduto = document.getElementById('fornecedorProduto').value;
+    <label for="marca">Marca:</label>
+    <input type="text" id="marca" name="marca">
 
-            // Faz uma requisição para o backend
-            const response = await fetch(`http://localhost:3000/estoque/produtos/consulta?id=${idProduto}&nome=${nomeProduto}&marca=${marcaProduto}&categoria=${categoriaProduto}&fornecedor=${fornecedorProduto}`);
-            const produtos = await response.json();
+    <label for="fornecedor">Fornecedor:</label>
+    <input type="text" id="fornecedor" name="fornecedor">
 
-            // Limpa os resultados anteriores
-            resultados.innerHTML = '';
+    <button type="submit">Buscar Produtos</button>
+  </form>
 
-            // Insere os novos resultados
-            produtos.forEach(produto => {
-                const row = resultados.insertRow();
-                row.insertCell(0).textContent = produto.id;
-                row.insertCell(1).textContent = produto.nome;
-                row.insertCell(2).textContent = produto.marca;
-                row.insertCell(3).textContent = produto.categoria;
-                row.insertCell(4).textContent = produto.fornecedor;
-            });
-        });
-    </script>
+  <h2>Lista de Produtos</h2>
+  <table id="produtosTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Marca</th>
+        <th>Fornecedor</th>
+        <th>Quantidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Produtos serão inseridos dinamicamente aqui -->
+    </tbody>
+  </table>
+
+  <script>
+    const produtoForm = document.getElementById('produtoForm');
+    const produtosTable = document.getElementById('produtosTable').getElementsByTagName('tbody')[0];
+
+    produtoForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const nome = document.getElementById('nome').value;
+      const categoria = document.getElementById('categoria').value;
+      const marca = document.getElementById('marca').value;
+      const fornecedor = document.getElementById('fornecedor').value;
+
+      const queryParams = new URLSearchParams({
+        nome,
+        categoria,
+        marca,
+        fornecedor
+      });
+
+      const response = await fetch(`/produtos/consulta?${queryParams.toString()}`);
+      const produtos = await response.json();
+
+      produtosTable.innerHTML = '';
+
+      produtos.forEach(produto => {
+        const row = produtosTable.insertRow();
+        row.insertCell(0).textContent = produto.id;
+        row.insertCell(1).textContent = produto.nome;
+        row.insertCell(2).textContent = produto.categoria;
+        row.insertCell(3).textContent = produto.marca;
+        row.insertCell(4).textContent = produto.fornecedor;
+        row.insertCell(5).textContent = produto.quantidade;
+      });
+    });
+
+    // Inicializa a tabela de produtos ao carregar a página
+    async function displayProdutos() {
+      const response = await fetch('/produtos');
+      const produtos = await response.json();
+
+      produtosTable.innerHTML = '';
+
+      produtos.forEach(produto => {
+        const row = produtosTable.insertRow();
+        row.insertCell(0).textContent = produto.id;
+        row.insertCell(1).textContent = produto.nome;
+        row.insertCell(2).textContent = produto.categoria;
+        row.insertCell(3).textContent = produto.marca;
+        row.insertCell(4).textContent = produto.fornecedor;
+        row.insertCell(5).textContent = produto.quantidade;
+      });
+    }
+
+    window.onload = displayProdutos;
+  </script>
 </body>
 </html>

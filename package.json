@@ -1,24 +1,30 @@
 {
   "name": "a3",
   "version": "1.0.0",
+  "description": "Este projeto tem como objetivo desenvolver um sistema de pedidos e gerenciamento de estoque utilizando tecnologias modernas e eficientes. O sistema será desenvolvido em Node.jspara o backend, utilizando Docker para contêinerização, MySQL como banco de dados e Postman para testes de API.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js"
+    "start": "node app.js",
+    "docker:start": "docker-compose up --build"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Syorl/A3.git"
+  },
+  "author": "Guilherme Ornellas, Jorge Henrique, João Leite, Tácyo e Victor Oliveira.",
   "license": "ISC",
-  "description": "",
+  "bugs": {
+    "url": "https://github.com/Syorl/A3/issues"
+  },
+  "homepage": "https://github.com/Syorl/A3#readme",
   "dependencies": {
     "a3": "file:",
-    "chart.js": "^4.4.6",
+    "a3_gui": "file:",
+    "child_process": "^1.0.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
-    "mysql2": "^3.11.5",
-    "open": "^10.1.0",
-    "sequelize": "^6.37.5",
-    "stack": "^0.1.0"
+    "mysql2": "^3.11.5"
   }
 }
