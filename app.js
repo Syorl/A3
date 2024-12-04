@@ -15,10 +15,10 @@ app.use(express.json());
 
 // Conexão com Banco de Dados
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "127.0.0.1", // Localhost para instância local do MySQL
+  host: process.env.DB_HOST || "localhost", // Localhost para instância local do MySQL
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "senha123",
-  database: process.env.DB_NAME || "SistemaGerenciamento",
+  database: process.env.DB_NAME || "mysqlloja",
 });
 
 db.connect((err) => {
@@ -68,7 +68,7 @@ app.get("/", (req, res) => {
 // Iniciar Servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`Conectado ao banco de dados: ${process.env.DB_NAME || "SistemaGerenciamento"}`);
+  console.log(`Conectado ao banco de dados: ${process.env.DB_NAME || "mysqlloja"}`);
   
   // Abrir o navegador padrão
   const url = `http://localhost:${PORT}`;

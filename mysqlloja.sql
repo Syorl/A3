@@ -1,6 +1,6 @@
 -- Criação do Banco de Dados
-CREATE DATABASE IF NOT EXISTS SistemaGerenciamento;
-USE SistemaGerenciamento;
+CREATE DATABASE IF NOT EXISTS mysqlloja;
+USE mysqlloja;
 
 -- Tabela de Fornecedores
 CREATE TABLE IF NOT EXISTS Fornecedores (

@@ -3,10 +3,10 @@ require('dotenv').config();
 
 // Conexão com o banco de dados
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "127.0.0.1",
+  host: process.env.DB_HOST || "localhost",
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "senha123",
-  database: process.env.DB_NAME || "SistemaGerenciamento",
+  database: process.env.DB_NAME || "mysqlloja",
   port: process.env.DB_PORT || 3306 // Adicionando a configuração da porta
 });
 

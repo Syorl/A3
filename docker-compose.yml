@@ -11,7 +11,7 @@ services:
       DB_HOST: mysql
       DB_USER: root
       DB_PASSWORD: senha123
-      DB_NAME: SistemaGerenciamento
+      DB_NAME: mysqlloja
       DB_PORT: 3306
     depends_on:
       mysql:
@@ -26,10 +26,10 @@ services:
       - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: senha123
-      MYSQL_DATABASE: SistemaGerenciamento
+      MYSQL_DATABASE: mysqlloja
     volumes:
       - db_data:/var/lib/mysql
-      - ./SistemaGerenciamento.txt:/docker-entrypoint-initdb.d/schema.sql
+      - ./mysqlloja.txt:/docker-entrypoint-initdb.d/schema.sql
     networks:
       - backend
     healthcheck:
