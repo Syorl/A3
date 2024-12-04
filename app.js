@@ -15,7 +15,7 @@ app.use(express.json());
 
 // Conexão com Banco de Dados
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost", // Localhost para instância local do MySQL
+  host: process.env.DB_HOST || "127.0.0.1", // Localhost para instância local do MySQL
   user: process.env.DB_USER || "root",
   password: process.env.DB_PASSWORD || "senha123",
   database: process.env.DB_NAME || "SistemaGerenciamento",
