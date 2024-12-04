@@ -45,7 +45,7 @@ const produtosRoutes = require("./routes/produtosRoutes");
 const vendedoresRoutes = require("./routes/vendedoresRoutes");
 const pedidosRoutes = require("./routes/pedidosRoutes");
 const estoqueRoutes = require("./routes/estoqueRoutes");
-const relatoriosRoutes = require("./routes/relatoriosRoutes");
+const relatorioRoutes = require("./routes/relatorioRoutes");
 // Uso das Rotas
 app.use("/clientes", clientesRoutes);
 app.use("/fornecedores", fornecedoresRoutes);
@@ -53,7 +53,7 @@ app.use("/produtos", produtosRoutes);
 app.use("/vendedores", vendedoresRoutes);
 app.use("/pedidoss", pedidosRoutes);
 app.use("/estoque", estoqueRoutes);
-app.use("/relatorio", relatoriosRoutes);
+app.use("/relatorio", relatorioRoutes);
 
 
 
