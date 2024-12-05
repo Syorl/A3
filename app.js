@@ -20,21 +20,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Importação de Rotas
 const clientesRoutes = require("./routes/clientesRoutes");
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes");
-const produtoRoutes = require("./routes/produtoRoutes");
+const estoqueRoutes = require("./routes/produtosRoutes");
 const vendedoresRoutes = require("./routes/vendedoresRoutes");
 const pedidosRoutes = require("./routes/pedidosRoutes");
 const relatorioRoutes = require("./routes/relatorioRoutes");
 const movimentacaoRoutes = require("./routes/movimentacaoRoutes");
+const produtosRoutes = require("./routes/produtosRoutes");
 // Uso das Rotas
 app.use("/clientes", clientesRoutes);
 app.use("/fornecedores", fornecedoresRoutes);
-app.use("/produto", produtoRoutes);
+app.use("/estoque", estoqueRoutes);
 app.use("/vendedores", vendedoresRoutes);
 app.use("/pedidoss", pedidosRoutes);
 app.use("/relatorio", relatorioRoutes);
-app.use("/movimentacao", movimentacaoRoutes);
-
-
+app.use('/api', produtosRoutes);
 
 // Servir arquivos estáticos da pasta Frontend
 app.use(express.static(path.join(__dirname, 'Frontend')));

@@ -1,123 +1,169 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestão de Estoque</title>
-  <link rel="stylesheet" href="../CSS/estoque_styles.css">
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>Gestão de Estoque</h1>
-      <p>Organize e acompanhe seus produtos, fornecedores e movimentações.</p>
-    </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadastro de Estoque</title>
+    <link rel="stylesheet" href="../CSS/estoque_styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Gerenciar Estoque</h1>
+        <p>Adicione produtos, veja o estoque e mantenha tudo organizado!</p>
+      </header>
 
-    <main>
-      <!-- Cadastro de Produtos -->
-      <section class="card">
-        <h2>Cadastro de Produtos</h2>
-        <form id="product-form">
-          <label>Nome do Produto:
-            <input type="text" id="product-name" placeholder="Ex.: Notebook" required />
-          </label>
-          <label>Descrição:
-            <textarea id="product-description" placeholder="Ex.: Notebook com 16GB RAM"></textarea>
-          </label>
-          <label>Categoria:
-            <input type="text" id="product-category" placeholder="Ex.: Eletrônicos" />
-          </label>
-          <label>Marca:
-            <input type="text" id="product-brand" placeholder="Ex.: Dell" />
-          </label>
-          <label>Modelo:
-            <input type="text" id="product-model" placeholder="Ex.: Inspiron 15" />
-          </label>
-          <label>Especificações Técnicas:
-            <textarea id="product-specs" placeholder="Ex.: Processador i7, 512GB SSD"></textarea>
-          </label>
-          <label>Fornecedor:
-            <select id="product-supplier" required>
-              <option value="" disabled selected>Selecione um fornecedor</option>
-              <!-- Os fornecedores serão carregados aqui dinamicamente -->
+      <section class="form-section">
+        <form id="formCadastro">
+          <div class="form-group">
+            <label for="nome">Nome do Produto:</label>
+            <input type="text" id="nome" name="nome" required />
+          </div>
+
+          <div class="form-group">
+            <label for="descricao">Descrição:</label>
+            <textarea id="descricao" name="descricao"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="categoria">Categoria:</label>
+            <input type="text" id="categoria" name="categoria" />
+          </div>
+
+          <div class="form-group">
+            <label for="marca">Marca:</label>
+            <input type="text" id="marca" name="marca" />
+          </div>
+
+          <div class="form-group">
+            <label for="modelo">Modelo:</label>
+            <input type="text" id="modelo" name="modelo" />
+          </div>
+
+          <div class="form-group">
+            <label for="fornecedor">Fornecedor:</label>
+            <select id="fornecedor">
+              <option value="">Selecione um fornecedor</option>
             </select>
-          </label>
-          <label>Valor (R$):
-            <input type="number" id="product-value" placeholder="Ex.: 2500.00" required />
-          </label>
+          </div>
+
+          <div class="form-group">
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade" />
+          </div>
+
+          <div class="form-group">
+            <label for="valor">Valor (R$):</label>
+            <input type="number" step="0.01" id="valor" name="valor" />
+          </div>
+
           <button type="submit">Cadastrar Produto</button>
         </form>
       </section>
-    </main>
-  </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const supplierSelect = document.getElementById("product-supplier");
+      <section class="table-section">
+        <h2>Produtos Cadastrados</h2>
+        <table id="tabelaProdutos">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Categoria</th>
+              <th>Quantidade</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </div>
 
-      try {
-        const response = await fetch('/fornecedores'); // Requisição para buscar fornecedores
-        if (response.ok) {
-          const fornecedores = await response.json(); // Obtém a lista de fornecedores
+    <script>
+      // Função para carregar fornecedores na lista de seleção
+      document.addEventListener("DOMContentLoaded", function () {
+        // URL do endpoint para buscar fornecedores
+        const url = "http://localhost:3000/fornecedores";
 
-          // Preenche o campo de seleção com os fornecedores
-          fornecedores.forEach(fornecedor => {
-            const option = document.createElement("option");
-            option.value = fornecedor.id_fornecedor; // Usando o id_fornecedor como valor
-            option.textContent = fornecedor.nome; // Exibindo o nome do fornecedor
-            supplierSelect.appendChild(option); // Adiciona a opção ao select
+        // Elemento dropdown para os fornecedores
+        const fornecedorSelect = document.querySelector("#fornecedor");
+
+        // Fazendo a requisição GET
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            // Iterando sobre os fornecedores recebidos
+            data.forEach((fornecedor) => {
+              // Criando uma opção para o select
+              const option = document.createElement("option");
+              option.value = fornecedor.id_fornecedor;
+              option.textContent = fornecedor.nome;
+
+              // Adicionando ao dropdown
+              fornecedorSelect.appendChild(option);
+            });
+          })
+          .catch((error) => {
+            console.error("Erro ao carregar fornecedores:", error);
           });
-        } else {
-          console.error("Erro ao carregar fornecedores");
-        }
-      } catch (error) {
-        console.error("Erro na requisição:", error);
-      }
-    });
-
-    const productForm = document.getElementById("product-form");
-
-    // Função para registrar novo produto
-    productForm.addEventListener("submit", async function(event) {
-      event.preventDefault();
-
-      const name = document.getElementById("product-name").value;
-      const description = document.getElementById("product-description").value;
-      const category = document.getElementById("product-category").value;
-      const brand = document.getElementById("product-brand").value;
-      const model = document.getElementById("product-model").value;
-      const specs = document.getElementById("product-specs").value;
-      const supplier = document.getElementById("product-supplier").value;
-      const value = parseFloat(document.getElementById("product-value").value);
-
-      // Cadastro de produto no banco de dados
-      const response = await fetch('/produtos/cadastrar', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name,
-          description,
-          category,
-          brand,
-          model,
-          specs,
-          supplier,
-          value
-        })
       });
 
-      if (response.ok) {
-        alert("Produto cadastrado com sucesso");
-        displayProducts(); // Atualiza a lista de produtos no datalist
-      } else {
-        const errorMessage = await response.text();
-        console.error("Erro ao cadastrar produto:", errorMessage);
-        alert("Erro ao cadastrar produto: " + errorMessage);
-      }
-    });
-  </script>
-</body>
-</html>
+      // Função para cadastrar produto
+      document
+        .getElementById("formCadastro")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
 
+          const formData = new FormData(event.target);
+          const data = Object.fromEntries(formData);
+
+          try {
+            const response = await fetch(
+              "http://localhost:3000/estoque/cadastrar",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data),
+              }
+            );
+
+            if (response.ok) {
+              alert("Produto cadastrado com sucesso!");
+              listarProdutos(); // Atualiza a tabela
+            } else {
+              alert("Erro ao cadastrar produto.");
+            }
+          } catch (error) {
+            console.error("Erro:", error);
+          }
+        });
+
+      // Função para listar produtos
+      async function listarProdutos() {
+        try {
+          const response = await fetch("http://localhost:3000/estoque/listar");
+          const produtos = await response.json();
+
+          const tabela = document.querySelector("#tabelaProdutos tbody");
+          tabela.innerHTML = "";
+
+          produtos.forEach((produto) => {
+            const row = tabela.insertRow();
+            row.innerHTML = `
+                        <td>${produto.id}</td>
+                        <td>${produto.nome}</td>
+                        <td>${produto.categoria}</td>
+                        <td>${produto.quantidade}</td>
+                        <td>${produto.valor}</td>
+                    `;
+          });
+        } catch (error) {
+          console.error("Erro ao listar produtos:", error);
+        }
+      }
+
+      // Carregar fornecedores e produtos na inicialização
+      carregarFornecedores();
+      listarProdutos();
+    </script>
+  </body>
+</html>
