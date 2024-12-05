@@ -1,7 +1,7 @@
-const db = require("../db"); // Conexão com o banco de dados
+const db = require('../db'); // Conexão com o banco de dados
 
 // Função para gerar o relatório de produtos mais vendidos
-const produtosMaisVendidos = (req, res) => {
+const produtosMaisVendidos = async (req, res) => {
   const query = `
     SELECT p.nome, SUM(m.quantidade) AS vendas
     FROM Movimentacoes m
@@ -10,36 +10,34 @@ const produtosMaisVendidos = (req, res) => {
     GROUP BY p.nome
     ORDER BY vendas DESC;
   `;
-
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Erro ao consultar o banco de dados:", err.stack);
-      return res.status(500).send("Erro ao gerar o relatório");
-    }
+  try {
+    const [results] = await db.query(query);
     res.json(results);
-  });
+  } catch (err) {
+    console.error("Erro ao consultar o banco de dados:", err.stack);
+    res.status(500).json({ message: "Erro ao gerar o relatório de produtos mais vendidos", error: err });
+  }
 };
 
 // Função para gerar o relatório de produtos com baixo estoque
-const produtosBaixoEstoque = (req, res) => {
+const produtosBaixoEstoque = async (req, res) => {
   const query = `
     SELECT nome, quantidade AS estoque
     FROM Produtos
     WHERE quantidade <= 10
     ORDER BY quantidade ASC;
   `;
-
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Erro ao consultar o banco de dados:", err.stack);
-      return res.status(500).send("Erro ao gerar o relatório");
-    }
+  try {
+    const [results] = await db.query(query);
     res.json(results);
-  });
+  } catch (err) {
+    console.error("Erro ao consultar o banco de dados:", err.stack);
+    res.status(500).json({ message: "Erro ao gerar o relatório de produtos com baixo estoque", error: err });
+  }
 };
 
 // Função para gerar o relatório de consumo médio do cliente
-const consumoMedioCliente = (req, res) => {
+const consumoMedioCliente = async (req, res) => {
   const query = `
     SELECT c.nome AS cliente, AVG(m.quantidade) AS consumo_medio
     FROM Movimentacoes m
@@ -48,18 +46,17 @@ const consumoMedioCliente = (req, res) => {
     GROUP BY c.nome
     ORDER BY c.nome;
   `;
-
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Erro ao consultar o banco de dados:", err.stack);
-      return res.status(500).send("Erro ao gerar o relatório");
-    }
+  try {
+    const [results] = await db.query(query);
     res.json(results);
-  });
+  } catch (err) {
+    console.error("Erro ao consultar o banco de dados:", err.stack);
+    res.status(500).json({ message: "Erro ao gerar o relatório de consumo médio do cliente", error: err });
+  }
 };
 
 // Função para gerar o relatório de produto por cliente
-const produtoPorCliente = (req, res) => {
+const produtoPorCliente = async (req, res) => {
   const query = `
     SELECT c.nome AS cliente, p.nome AS produto, SUM(m.quantidade) AS quantidade
     FROM Movimentacoes m
@@ -69,14 +66,13 @@ const produtoPorCliente = (req, res) => {
     GROUP BY c.nome, p.nome
     ORDER BY c.nome;
   `;
-
-  db.query(query, (err, results) => {
-    if (err) {
-      console.error("Erro ao consultar o banco de dados:", err.stack);
-      return res.status(500).send("Erro ao gerar o relatório");
-    }
+  try {
+    const [results] = await db.query(query);
     res.json(results);
-  });
+  } catch (err) {
+    console.error("Erro ao consultar o banco de dados:", err.stack);
+    res.status(500).json({ message: "Erro ao gerar o relatório de produtos por cliente", error: err });
+  }
 };
 
 module.exports = {

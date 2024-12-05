@@ -10,22 +10,18 @@ CREATE TABLE IF NOT EXISTS Fornecedores (
     endereco VARCHAR(200)
 );
 
-
 -- Tabela de Produtos
 CREATE TABLE IF NOT EXISTS Produtos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    descricao TEXT,
-    categoria VARCHAR(50),
-    marca VARCHAR(50),
-    modelo VARCHAR(50),
-    especificacoes TEXT,
-    id_fornecedor INT,
-    quantidade INT DEFAULT 0,
-    valor DECIMAL(10, 2),
-    data_entrada DATETIME,
-    data_saida DATETIME,
-    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedores(id_fornecedor) ON DELETE SET NULL
+    id_produto INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    descricao TEXT NOT NULL,
+    categoria VARCHAR(255) NOT NULL,
+    marca VARCHAR(255) NOT NULL,
+    modelo VARCHAR(255) NOT NULL,
+    quantidade INT NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    id_fornecedor INT NOT NULL,
+    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedores(id_fornecedor) ON DELETE CASCADE
 );
 
 -- Tabela de Clientes
@@ -55,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Pedidos (
     data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente) ON DELETE CASCADE,
     FOREIGN KEY (id_vendedor) REFERENCES Vendedores(id_vendedor) ON DELETE CASCADE,
-    FOREIGN KEY (id_produto) REFERENCES Produtos(id) ON DELETE CASCADE
+    FOREIGN KEY (id_produto) REFERENCES Produtos(id_produto) ON DELETE CASCADE
 );
 
 -- Tabela de Movimentações
@@ -67,14 +63,14 @@ CREATE TABLE IF NOT EXISTS Movimentacoes (
     valor DECIMAL(10, 2),
     responsavel VARCHAR(100),
     data DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_produto) REFERENCES Produtos(id) ON DELETE CASCADE
+    FOREIGN KEY (id_produto) REFERENCES Produtos(id_produto) ON DELETE CASCADE
 );
 
 -- View para Relatório de Produtos Mais Vendidos
 CREATE OR REPLACE VIEW view_produtos_mais_vendidos AS
 SELECT p.nome, SUM(m.quantidade) AS vendas
 FROM Movimentacoes m
-JOIN Produtos p ON m.id_produto = p.id
+JOIN Produtos p ON m.id_produto = p.id_produto
 WHERE m.tipo_movimentacao = 'saida'
 GROUP BY p.nome
 ORDER BY vendas DESC;
@@ -85,7 +81,7 @@ SELECT c.nome AS cliente, p.nome AS produto, SUM(m.quantidade) AS quantidade
 FROM Movimentacoes m
 JOIN Pedidos pe ON m.id_produto = pe.id_produto
 JOIN Clientes c ON pe.id_cliente = c.id_cliente
-JOIN Produtos p ON m.id_produto = p.id
+JOIN Produtos p ON m.id_produto = p.id_produto
 GROUP BY c.nome, p.nome
 ORDER BY c.nome;
 

@@ -167,3 +167,38 @@ footer {
   font-size: 0.9rem;
   color: #5a7272;
 }
+
+/* Botão de Cadastro */
+button.btn-submit {
+  padding: 10px 20px;
+  background-color: #008cba;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-submit:hover {
+  background-color: #005f8a;
+}
+
+/* Mensagens de status */
+#status-message {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 14px;
+}
+
+#status-message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+#status-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}

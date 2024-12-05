@@ -1,63 +1,73 @@
-const db = require("../db");
+const db = require('../db');
 
-const getAllVendedores = (req, res) => {
-  const query = "SELECT * FROM Vendedores";
-  db.query(query, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: "Erro ao buscar vendedores" });
-    } else {
-      res.json(results);
-    }
-  });
+// Buscar todos os vendedores
+const getAllVendedores = async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT * FROM Vendedores");
+    res.json(rows);
+  } catch (err) {
+    console.error("Erro ao consultar o banco de dados:", err.stack);
+    res.status(500).json({ message: "Erro ao buscar vendedores", error: err });
+  }
 };
 
-const getVendedorById = (req, res) => {
+// Buscar vendedor por ID
+const getVendedorById = async (req, res) => {
   const { id } = req.params;
-  const query = "SELECT * FROM Vendedores WHERE id_vendedor = ?";
-  db.query(query, [id], (err, results) => {
-    if (err) {
-      res.status(500).json({ error: "Erro ao buscar vendedor" });
+  try {
+    const [rows] = await db.query("SELECT * FROM Vendedores WHERE id_vendedor = ?", [id]);
+    if (rows.length > 0) {
+      res.json(rows[0]);
     } else {
-      res.json(results[0] || {});
+      res.status(404).json({ message: "Vendedor não encontrado" });
     }
-  });
+  } catch (err) {
+    console.error("Erro ao consultar o banco de dados:", err.stack);
+    res.status(500).json({ message: "Erro ao buscar vendedor", error: err });
+  }
 };
 
-const createVendedor = (req, res) => {
+// Criar um novo vendedor
+const createVendedor = async (req, res) => {
   const { nome, cpf, email } = req.body;
-  const query = "INSERT INTO Vendedores (nome, cpf, email) VALUES (?, ?, ?)";
-  db.query(query, [nome, cpf, email], (err, result) => {
-    if (err) {
-      res.status(500).json({ error: "Erro ao criar vendedor" });
-    } else {
-      res.status(201).json({ id_vendedor: result.insertId });
-    }
-  });
+  try {
+    const [result] = await db.query("INSERT INTO Vendedores (nome, cpf, email) VALUES (?, ?, ?)", [nome, cpf, email]);
+    res.status(201).json({ id_vendedor: result.insertId });
+  } catch (err) {
+    console.error("Erro ao criar vendedor:", err.stack);
+    res.status(500).json({ message: "Erro ao criar vendedor", error: err });
+  }
 };
 
-const updateVendedor = (req, res) => {
+// Atualizar um vendedor
+const updateVendedor = async (req, res) => {
   const { id } = req.params;
   const { nome, cpf, email } = req.body;
-  const query = "UPDATE Vendedores SET nome = ?, cpf = ?, email = ? WHERE id_vendedor = ?";
-  db.query(query, [nome, cpf, email, id], (err) => {
-    if (err) {
-      res.status(500).json({ error: "Erro ao atualizar vendedor" });
-    } else {
-      res.sendStatus(200);
+  try {
+    const [result] = await db.query("UPDATE Vendedores SET nome = ?, cpf = ?, email = ? WHERE id_vendedor = ?", [nome, cpf, email, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Vendedor não encontrado" });
     }
-  });
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Erro ao atualizar vendedor:", err.stack);
+    res.status(500).json({ message: "Erro ao atualizar vendedor", error: err });
+  }
 };
 
-const deleteVendedor = (req, res) => {
+// Deletar um vendedor
+const deleteVendedor = async (req, res) => {
   const { id } = req.params;
-  const query = "DELETE FROM Vendedores WHERE id_vendedor = ?";
-  db.query(query, [id], (err) => {
-    if (err) {
-      res.status(500).json({ error: "Erro ao deletar vendedor" });
-    } else {
-      res.sendStatus(200);
+  try {
+    const [result] = await db.query("DELETE FROM Vendedores WHERE id_vendedor = ?", [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Vendedor não encontrado" });
     }
-  });
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Erro ao deletar vendedor:", err.stack);
+    res.status(500).json({ message: "Erro ao deletar vendedor", error: err });
+  }
 };
 
 module.exports = {

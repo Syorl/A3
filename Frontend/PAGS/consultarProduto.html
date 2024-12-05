@@ -45,6 +45,7 @@
     const produtoForm = document.getElementById('produtoForm');
     const produtosTable = document.getElementById('produtosTable').getElementsByTagName('tbody')[0];
 
+    // Função para buscar e listar produtos com base nos filtros fornecidos
     produtoForm.addEventListener('submit', async (event) => {
       event.preventDefault();
 
@@ -53,6 +54,7 @@
       const marca = document.getElementById('marca').value;
       const fornecedor = document.getElementById('fornecedor').value;
 
+      // Construindo a query string com os parâmetros de filtro
       const queryParams = new URLSearchParams({
         nome,
         categoria,
@@ -60,11 +62,14 @@
         fornecedor
       });
 
+      // Realizando a requisição para buscar os produtos filtrados
       const response = await fetch(`/produtos/consulta?${queryParams.toString()}`);
       const produtos = await response.json();
 
+      // Limpando a tabela antes de inserir novos resultados
       produtosTable.innerHTML = '';
 
+      // Inserindo os produtos na tabela
       produtos.forEach(produto => {
         const row = produtosTable.insertRow();
         row.insertCell(0).textContent = produto.id;
@@ -76,13 +81,15 @@
       });
     });
 
-    // Inicializa a tabela de produtos ao carregar a página
+    // Função para listar todos os produtos ao carregar a página
     async function displayProdutos() {
       const response = await fetch('/produtos');
       const produtos = await response.json();
 
+      // Limpando a tabela antes de inserir os produtos
       produtosTable.innerHTML = '';
 
+      // Inserindo os produtos na tabela
       produtos.forEach(produto => {
         const row = produtosTable.insertRow();
         row.insertCell(0).textContent = produto.id;
@@ -94,6 +101,7 @@
       });
     }
 
+    // Inicializando a tabela de produtos ao carregar a página
     window.onload = displayProdutos;
   </script>
 </body>
