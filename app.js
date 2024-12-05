@@ -8,52 +8,31 @@ const { exec } = require("child_process");
 // Instância do App
 const app = express();
 const PORT = process.env.PORT || 3000;
+const bodyParser = require('body-parser');
+
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Conexão com Banco de Dados
-const db = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost", // Localhost para instância local do MySQL
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "senha123",
-  database: process.env.DB_NAME || "mysqlloja",
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error("Erro ao conectar no banco de dados:", err.message);
-    process.exit(1);
-  }
-  console.log("Conexão com o banco de dados estabelecida com sucesso!");
-});
-
-// Testar conexão ao banco ao iniciar
-db.query("SELECT 1", (err) => {
-  if (err) {
-    console.error("Erro ao testar conexão com o banco:", err.message);
-  } else {
-    console.log("Conexão com o banco testada com sucesso!");
-  }
-});
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Importação de Rotas
 const clientesRoutes = require("./routes/clientesRoutes");
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes");
-const produtosRoutes = require("./routes/produtosRoutes");
+const produtoRoutes = require("./routes/produtoRoutes");
 const vendedoresRoutes = require("./routes/vendedoresRoutes");
 const pedidosRoutes = require("./routes/pedidosRoutes");
-const estoqueRoutes = require("./routes/estoqueRoutes");
 const relatorioRoutes = require("./routes/relatorioRoutes");
+const movimentacaoRoutes = require("./routes/movimentacaoRoutes");
 // Uso das Rotas
 app.use("/clientes", clientesRoutes);
 app.use("/fornecedores", fornecedoresRoutes);
-app.use("/produtos", produtosRoutes);
+app.use("/produto", produtoRoutes);
 app.use("/vendedores", vendedoresRoutes);
 app.use("/pedidoss", pedidosRoutes);
-app.use("/estoque", estoqueRoutes);
 app.use("/relatorio", relatorioRoutes);
+app.use("/movimentacao", movimentacaoRoutes);
 
 
 

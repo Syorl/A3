@@ -39,173 +39,85 @@
           <label>Fornecedor:
             <select id="product-supplier" required>
               <option value="" disabled selected>Selecione um fornecedor</option>
+              <!-- Os fornecedores serão carregados aqui dinamicamente -->
             </select>
+          </label>
+          <label>Valor (R$):
+            <input type="number" id="product-value" placeholder="Ex.: 2500.00" required />
           </label>
           <button type="submit">Cadastrar Produto</button>
         </form>
-      </section>
-
-      <!-- Controle de Estoque -->
-      <section class="card">
-        <h2>Controle de Estoque</h2>
-        <form id="stock-form">
-          <label>Produto: 
-            <input type="text" id="stock-product" placeholder="Ex.: Notebook Dell" required />
-          </label>
-          <label>Quantidade: 
-            <input type="number" id="stock-quantity" placeholder="Ex.: 50" required />
-          </label>
-          <label>Valor (R$): 
-            <input type="number" id="stock-value" placeholder="Ex.: 2500.00" required />
-          </label>
-          <label>Tipo de Movimentação:
-            <select id="movement-type">
-              <option value="entrada">Entrada</option>
-              <option value="saida">Saída</option>
-            </select>
-          </label>
-          <button type="submit">Registrar Movimentação</button>
-        </form>
-        <p class="alert">⚠️ Atenção: Estoque baixo para *Produto X*.</p>
-      </section>
-
-      <!-- Lista de Produtos no Estoque -->
-      <section class="card">
-        <h2>Produtos no Estoque</h2>
-        <table id="stock-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Quantidade</th>
-              <th>Valor</th>
-              <th>Data de Entrada</th>
-              <th>Data de Saída</th>
-              <th>Editar</th>
-              <th>Excluir</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Os produtos serão inseridos dinamicamente aqui -->
-          </tbody>
-        </table>
-      </section>
-
-      <!-- Histórico de Movimentações -->
-      <section class="card">
-        <h2>Histórico de Movimentações</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Produto</th>
-              <th>Responsável</th>
-              <th>Quantidade</th>
-              <th>Valor</th>
-              <th>Tipo</th>
-            </tr>
-          </thead>
-          <tbody id="movement-history">
-            <!-- Histórico de movimentações será inserido dinamicamente -->
-          </tbody>
-        </table>
       </section>
     </main>
   </div>
 
   <script>
-    const productForm = document.getElementById("product-form");
-    const stockForm = document.getElementById("stock-form");
-    const stockTable = document.getElementById("stock-table").getElementsByTagName("tbody")[0];
-    const movementHistory = document.getElementById("movement-history");
-    const supplierSelect = document.getElementById("product-supplier");
+    document.addEventListener("DOMContentLoaded", async () => {
+      const supplierSelect = document.getElementById("product-supplier");
 
-    let movements = [];
+      try {
+        const response = await fetch('/fornecedores'); // Requisição para buscar fornecedores
+        if (response.ok) {
+          const fornecedores = await response.json(); // Obtém a lista de fornecedores
 
-    
-
-   // Função para registrar movimentação de estoque
-stockForm.addEventListener("submit", async function(event) {
-  event.preventDefault();
-
-  const productId = document.getElementById("stock-product").value; // Certifique-se de que o ID do produto está sendo usado
-  const quantity = parseInt(document.getElementById("stock-quantity").value);
-  const value = parseFloat(document.getElementById("stock-value").value);
-  const type = document.getElementById("movement-type").value;
-  const responsible = "Admin"; // Substitua pelo ID do responsável
-
-  const response = await fetch('/produtos/movimentacao', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      id_produto: productId,
-      tipo_movimentacao: type,
-      quantidade: quantity,
-      valor: value,
-      responsavel: responsible
-    })
-  });
-
-  if (response.ok) {
-    alert("Movimentação registrada com sucesso");
-    displayMovementHistory();
-    displayProducts();
-  } else {
-    alert("Erro ao registrar movimentação");
-  }
-});
-
-
-    // Função para exibir histórico de movimentações
-    function displayMovementHistory() {
-      movementHistory.innerHTML = "";
-      movements.forEach((movement) => {
-        const row = movementHistory.insertRow();
-        row.innerHTML = `
-          <td>${movement.entryDate || movement.exitDate || "N/A"}</td>
-          <td>${movement.productName}</td>
-          <td>${movement.responsible}</td>
-          <td>${movement.quantity}</td>
-          <td>${movement.value ? `R$ ${movement.value.toFixed(2)}` : "N/A"}</td>
-          <td>${movement.type}</td>
-        `;
-      });
-    }
-
-    // Função para exibir produtos no estoque
-    function displayProducts() {
-      stockTable.innerHTML = "";
-      movements.forEach((movement) => {
-        const row = stockTable.insertRow();
-        row.innerHTML = `
-          <td>${movement.productName}</td>
-          <td>${movement.quantity}</td>
-          <td>R$ ${movement.value ? movement.value.toFixed(2) : "N/A"}</td>
-          <td>${movement.entryDate || "N/A"}</td>
-          <td>${movement.exitDate || "N/A"}</td>
-          <td><button onclick="editProduct('${movement.productName}')">Editar</button></td>
-          <td><button onclick="deleteProduct('${movement.productName}')">Excluir</button></td>
-        `;
-      });
-    }
-
-    // Função para editar produto
-    function editProduct(productName) {
-      const movement = movements.find((m) => m.productName === productName);
-      if (movement) {
-        document.getElementById("stock-product").value = movement.productName;
-        document.getElementById("stock-quantity").value = movement.quantity;
-        document.getElementById("stock-value").value = movement.value;
-        document.getElementById("movement-type").value = movement.type;
+          // Preenche o campo de seleção com os fornecedores
+          fornecedores.forEach(fornecedor => {
+            const option = document.createElement("option");
+            option.value = fornecedor.id_fornecedor; // Usando o id_fornecedor como valor
+            option.textContent = fornecedor.nome; // Exibindo o nome do fornecedor
+            supplierSelect.appendChild(option); // Adiciona a opção ao select
+          });
+        } else {
+          console.error("Erro ao carregar fornecedores");
+        }
+      } catch (error) {
+        console.error("Erro na requisição:", error);
       }
-    }
+    });
 
-    // Função para excluir produto
-    function deleteProduct(productName) {
-      movements = movements.filter((m) => m.productName !== productName);
-      displayProducts();
-    }
+    const productForm = document.getElementById("product-form");
+
+    // Função para registrar novo produto
+    productForm.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("product-name").value;
+      const description = document.getElementById("product-description").value;
+      const category = document.getElementById("product-category").value;
+      const brand = document.getElementById("product-brand").value;
+      const model = document.getElementById("product-model").value;
+      const specs = document.getElementById("product-specs").value;
+      const supplier = document.getElementById("product-supplier").value;
+      const value = parseFloat(document.getElementById("product-value").value);
+
+      // Cadastro de produto no banco de dados
+      const response = await fetch('/produtos/cadastrar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          description,
+          category,
+          brand,
+          model,
+          specs,
+          supplier,
+          value
+        })
+      });
+
+      if (response.ok) {
+        alert("Produto cadastrado com sucesso");
+        displayProducts(); // Atualiza a lista de produtos no datalist
+      } else {
+        const errorMessage = await response.text();
+        console.error("Erro ao cadastrar produto:", errorMessage);
+        alert("Erro ao cadastrar produto: " + errorMessage);
+      }
+    });
   </script>
 </body>
 </html>
+
