@@ -66,41 +66,6 @@ CREATE TABLE IF NOT EXISTS Movimentacoes (
     FOREIGN KEY (id_produto) REFERENCES Produtos(id_produto) ON DELETE CASCADE
 );
 
--- View para Relatório de Produtos Mais Vendidos
-CREATE OR REPLACE VIEW view_produtos_mais_vendidos AS
-SELECT p.nome, SUM(m.quantidade) AS vendas
-FROM Movimentacoes m
-JOIN Produtos p ON m.id_produto = p.id_produto
-WHERE m.tipo_movimentacao = 'saida'
-GROUP BY p.nome
-ORDER BY vendas DESC;
-
--- View para Relatório de Produto por Cliente
-CREATE OR REPLACE VIEW view_produto_por_cliente AS
-SELECT c.nome AS cliente, p.nome AS produto, SUM(m.quantidade) AS quantidade
-FROM Movimentacoes m
-JOIN Pedidos pe ON m.id_produto = pe.id_produto
-JOIN Clientes c ON pe.id_cliente = c.id_cliente
-JOIN Produtos p ON m.id_produto = p.id_produto
-GROUP BY c.nome, p.nome
-ORDER BY c.nome;
-
--- View para Relatório de Consumo Médio do Cliente
-CREATE OR REPLACE VIEW view_consumo_medio_cliente AS
-SELECT c.nome AS cliente, AVG(m.quantidade) AS consumo_medio
-FROM Movimentacoes m
-JOIN Pedidos pe ON m.id_produto = pe.id_produto
-JOIN Clientes c ON pe.id_cliente = c.id_cliente
-GROUP BY c.nome
-ORDER BY c.nome;
-
--- View para Relatório de Produtos com Baixo Estoque
-CREATE OR REPLACE VIEW view_produtos_baixo_estoque AS
-SELECT nome, quantidade AS estoque
-FROM Produtos
-WHERE quantidade <= 10
-ORDER BY quantidade ASC;
-
 -- Inserir fornecedores fictícios
 INSERT IGNORE INTO Fornecedores (nome, cnpj, endereco)
 VALUES
