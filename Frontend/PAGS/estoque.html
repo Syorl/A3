@@ -1,214 +1,243 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro de Clientes e Produtos</title>
-  <link rel="stylesheet" href="../CSS/Clientes_styles.css">
+  <link rel="stylesheet" href="../CSS/estoque_styles.css">
 </head>
+
 <body>
   <h1>Cadastro de Produto</h1>
   <form id="produtoForm">
     <label for="produtoNome">Nome do Produto:</label>
     <input type="text" id="produtoNome" name="produtoNome" required>
-
     <label for="descricao">Descrição:</label>
     <input type="text" id="descricao" name="descricao" required>
-
     <label for="categoria">Categoria:</label>
     <input type="text" id="categoria" name="categoria" required>
-
     <label for="marca">Marca:</label>
     <input type="text" id="marca" name="marca" required>
-
     <label for="modelo">Modelo:</label>
     <input type="text" id="modelo" name="modelo" required>
     <div class="form-group">
-    <label for="quantidade">Quantidade:</label>
-    <input type="number" id="quantidade" name="quantidade" required>
-
-    <label for="valor">Valor:</label>
-    <input type="number" step="0.01" id="valor" name="valor" required>
-
-    <label for="id_fornecedor">Fornecedor:</label>
-    <select id="id_fornecedor" name="id_fornecedor" required>
-      <option value="">Selecione um fornecedor</option>
-      <!-- Fornecedores serão inseridos dinamicamente aqui -->
-    </select>
+      <label for="quantidade">Quantidade:</label>
+      <input type="number" id="quantidade" name="quantidade" required>
+      <label for="valor">Valor:</label>
+      <input type="number" step="0.01" id="valor" name="valor" required>
+      <label for="id_fornecedor">Fornecedor:</label>
+      <select id="id_fornecedor" name="id_fornecedor" required>
+        <option value="">Selecione um fornecedor</option> <!-- Fornecedores serão inseridos dinamicamente aqui -->
+      </select>
     </div>
-    <button type="submit">Cadastrar Produto</button>
-    <button type="button" id="updateProduto">Atualizar Produto</button>
-    <button type="button" id="deleteProduto">Deletar Produto</button>
+    <div class="button-group">
+      <button type="submit">Cadastrar Produto</button>
+    </div>
   </form>
-
   <h2>Lista de Produtos</h2>
   <table id="produtosTable">
     <thead>
       <tr>
         <th>ID</th>
         <th>Nome</th>
-        <th>Descrição</th>
         <th>Categoria</th>
         <th>Marca</th>
         <th>Modelo</th>
         <th>Quantidade</th>
         <th>Valor</th>
-        <th>ID Fornecedor</th>
+        <th>Fornecedor</th>
+        <th>Ações</th> <!-- Coluna para botões de ação -->
       </tr>
     </thead>
-    <tbody>
-      <!-- Produtos serão inseridos dinamicamente aqui -->
-    </tbody>
-  </table>
+    <tbody> <!-- Produtos serão inseridos dinamicamente aqui --> </tbody>
 
-  <script>
-    async function carregarProdutos() {
-    try {
-        const response = await fetch('/api/produtos'); // Rota para obter todos os produtos
-        if (response.ok) {
+    <script>
+      // Função para carregar produtos
+      async function carregarProdutos() {
+        try {
+          const response = await fetch('http://localhost:3000/produto'); // Rota para obter todos os produtos
+          if (response.ok) {
             const produtos = await response.json();
-            const produtosContainer = document.getElementById('produtos-container');
-            produtosContainer.innerHTML = ''; // Limpa a área de exibição
+            const produtosTableBody = document.getElementById('produtosTable').getElementsByTagName('tbody')[0];
+            produtosTableBody.innerHTML = ''; // Limpa a tabela antes de adicionar novos produtos
 
             produtos.forEach(produto => {
-                const produtoDiv = document.createElement('div');
-                produtoDiv.innerHTML = `
-                    <h3>${produto.nome}</h3>
-                    <p>Categoria: ${produto.categoria}</p>
-                    <p>Marca: ${produto.marca}</p>
-                    <p>Fornecedor: ${produto.fornecedor}</p>
-                    <p>Quantidade: ${produto.quantidade}</p>
-                    <button onclick="deletarProduto(${produto.id})">Deletar</button>
-                    <button onclick="editarProduto(${produto.id})">Editar</button>
-                `;
-                produtosContainer.appendChild(produtoDiv);
+              const row = produtosTableBody.insertRow(); // Cria uma nova linha na tabela
+
+              // Cria as células para cada coluna
+              row.insertCell(0).textContent = produto.id; // ID do produto
+              row.insertCell(1).textContent = produto.nome;
+              row.insertCell(2).textContent = produto.categoria;
+              row.insertCell(3).textContent = produto.marca;
+              row.insertCell(4).textContent = produto.modelo;
+              row.insertCell(5).textContent = produto.quantidade;
+              row.insertCell(6).textContent = produto.valor;
+
+              // Aqui, usamos o nome do fornecedor ao invés do ID
+              const fornecedorNome = window.fornecedores[produto.id_fornecedor] || 'Desconhecido';
+              row.insertCell(7).textContent = fornecedorNome;
+
+              // Coloca os botões de ação (Deletar e Atualizar) na tabela
+              const actionCell = row.insertCell(8);
+              actionCell.innerHTML = `
+                <button onclick="editarProduto(${produto.id})">Atualizar</button>
+                <button onclick="deletarProduto(${produto.id})">Deletar</button>
+              `;
             });
-        } else {
+          } else {
             console.error('Erro ao carregar produtos:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Erro ao buscar produtos:', error);
         }
-    } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
-    }
-}
+      }
 
-// Função para preencher o campo de fornecedores
-async function carregarFornecedores() {
-  try {
-    const response = await fetch('/fornecedores');  // Verifique se esta URL está correta
-    if (response.ok) {
-      const fornecedores = await response.json();
-      
-      const fornecedorSelect = document.getElementById('id_fornecedor');
-      
-      // Limpa as opções existentes
-      fornecedorSelect.innerHTML = '<option value="">Selecione um fornecedor</option>';
-      
-      // Adiciona cada fornecedor como uma opção no select
-      fornecedores.forEach(fornecedor => {
-        const option = document.createElement('option');
-        option.value = fornecedor.id_fornecedor;
-        option.textContent = fornecedor.nome;  // Supondo que o nome do fornecedor seja 'nome'
-        fornecedorSelect.appendChild(option);
-      });
-    } else {
-      console.error("Erro ao carregar fornecedores:", response.statusText);
-    }
-  } catch (error) {
-    console.error("Erro ao carregar fornecedores:", error);
-  }
-}
+      // Função para carregar fornecedores
+      async function carregarFornecedores() {
+        try {
+          const response = await fetch('http://localhost:3000/fornecedores'); // Verifique se esta URL está correta
+          if (response.ok) {
+            const fornecedores = await response.json();
 
-// Carregar fornecedores ao carregar a página
-window.onload = () => {
-  displayProdutos();
-  carregarFornecedores();  // Carrega fornecedores
-};
+            // Armazenar fornecedores em um objeto onde a chave é o ID
+            window.fornecedores = {};
 
+            const fornecedorSelect = document.getElementById('id_fornecedor');
 
-// Função para criar um novo produto
-async function criarProduto(event) {
-    event.preventDefault();
+            // Limpa as opções existentes no select
+            fornecedorSelect.innerHTML = '<option value="">Selecione um fornecedor</option>';
 
-    const nome = document.getElementById('nome').value;
-    const categoria = document.getElementById('categoria').value;
-    const marca = document.getElementById('marca').value;
-    const quantidade = document.getElementById('quantidade').value;
-    const valor = document.getElementById('valor').value;
+            // Adiciona cada fornecedor como uma opção no select
+            fornecedores.forEach(fornecedor => {
+              // Armazenando fornecedor no objeto
+              window.fornecedores[fornecedor.id_fornecedor] = fornecedor.nome;
 
-    const produto = {
-        nome,
-        categoria,
-        marca,
-        quantidade,
-        valor
-    };
-
-    try {
-        const response = await fetch('/api/produtos', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(produto)
-        });
-
-        if (response.ok) {
-            alert('Produto criado com sucesso!');
-            carregarProdutos(); // Atualiza a lista de produtos
-        } else {
-            console.error('Erro ao criar produto:', response.statusText);
+              // Criando a opção para o select
+              const option = document.createElement('option');
+              option.value = fornecedor.id_fornecedor;
+              option.textContent = fornecedor.nome;
+              fornecedorSelect.appendChild(option);
+            });
+          } else {
+            console.error("Erro ao carregar fornecedores:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar fornecedores:", error);
         }
-    } catch (error) {
-        console.error('Erro ao criar produto:', error);
-    }
+      }
+
+      // Função para adicionar um novo produto
+function adicionarProduto() {
+  const nome = document.getElementById('nome').value;
+  const descricao = document.getElementById('descricao').value;
+  const categoria = document.getElementById('categoria').value;
+  const marca = document.getElementById('marca').value;
+  const modelo = document.getElementById('modelo').value;
+  const quantidade = document.getElementById('quantidade').value;
+  const valor = document.getElementById('valor').value;
+  const id_fornecedor = document.getElementById('id_fornecedor').value; // Supondo que tenha um campo id_fornecedor
+
+  const data = {
+    nome,
+    descricao,
+    categoria,
+    marca,
+    modelo,
+    quantidade,
+    valor,
+    id_fornecedor
+  };
+
+  fetch('http://localhost:3000/produto/adicionar', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert('Produto adicionado com sucesso!');
+    console.log(data);
+  })
+  .catch(error => {
+    console.error('Erro ao adicionar produto:', error);
+    alert('Erro ao adicionar produto.');
+  });
 }
 
+
+      // Função para deletar um produto
 // Função para deletar um produto
-async function deletarProduto(id) {
-    try {
-        const response = await fetch(`/api/produtos/${id}`, {
-            method: 'DELETE'
-        });
+function deletarProduto(id) {
+  const confirmacao = confirm('Tem certeza que deseja excluir este produto?');
+  if (!confirmacao) return;
 
-        if (response.ok) {
-            alert('Produto deletado com sucesso!');
-            carregarProdutos(); // Atualiza a lista de produtos
-        } else {
-            console.error('Erro ao deletar produto:', response.statusText);
-        }
-    } catch (error) {
-        console.error('Erro ao deletar produto:', error);
+  fetch(`http://localhost:3000/produto/${id}`, {
+    method: 'DELETE',
+  })
+  .then(response => {
+    if (response.status === 204) {
+      alert('Produto deletado com sucesso!');
+    } else {
+      alert('Erro ao deletar produto.');
     }
+  })
+  .catch(error => {
+    console.error('Erro ao deletar produto:', error);
+    alert('Erro ao deletar produto.');
+  });
 }
 
-// Função para editar um produto (Exemplo, pode ser ajustado conforme a necessidade)
-async function editarProduto(id) {
-    const novoNome = prompt('Novo nome do produto:');
-    if (!novoNome) return;
 
-    const produtoAtualizado = {
-        nome: novoNome
-    };
 
-    try {
-        const response = await fetch(`/api/produtos/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(produtoAtualizado)
-        });
+      // Função para editar um produto
+function editarProduto(id) {
+  const nome = document.getElementById('nome').value;
+  const descricao = document.getElementById('descricao').value;
+  const categoria = document.getElementById('categoria').value;
+  const marca = document.getElementById('marca').value;
+  const modelo = document.getElementById('modelo').value;
+  const quantidade = document.getElementById('quantidade').value;
+  const valor = document.getElementById('valor').value;
 
-        if (response.ok) {
-            alert('Produto atualizado com sucesso!');
-            carregarProdutos(); // Atualiza a lista de produtos
-        } else {
-            console.error('Erro ao atualizar produto:', response.statusText);
-        }
-    } catch (error) {
-        console.error('Erro ao editar produto:', error);
-    }
+  const data = {
+    nome,
+    descricao,
+    categoria,
+    marca,
+    modelo,
+    quantidade,
+    valor
+  };
+
+  fetch(`http://localhost:3000/produto/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert('Produto atualizado com sucesso!');
+    console.log(data);
+  })
+  .catch(error => {
+    console.error('Erro ao atualizar produto:', error);
+    alert('Erro ao atualizar produto.');
+  });
 }
-  </script>
+
+      // Carregar fornecedores e produtos ao carregar a página
+      window.onload = () => {
+        carregarProdutos();
+        carregarFornecedores(); // Carrega fornecedores
+      };
+
+
+    </script>
 </body>
+
 </html>

@@ -1,3 +1,4 @@
+// app.js
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
 
 // Importação de Rotas
 const clientesRoutes = require("./routes/clientesRoutes");

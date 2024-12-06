@@ -5,7 +5,7 @@ const produtosMaisVendidos = async (req, res) => {
   const query = `
     SELECT p.nome, SUM(m.quantidade) AS vendas
     FROM Movimentacoes m
-    JOIN Produtos p ON m.id_produto = p.id
+    JOIN produtos p ON m.id_produto = p.id
     WHERE m.tipo_movimentacao = 'saida'
     GROUP BY p.nome
     ORDER BY vendas DESC;
@@ -23,7 +23,7 @@ const produtosMaisVendidos = async (req, res) => {
 const produtosBaixoEstoque = async (req, res) => {
   const query = `
     SELECT nome, quantidade AS estoque
-    FROM Produtos
+    FROM produtos
     WHERE quantidade <= 10
     ORDER BY quantidade ASC;
   `;
@@ -62,7 +62,7 @@ const produtoPorCliente = async (req, res) => {
     FROM Movimentacoes m
     JOIN Pedidos pe ON m.id_produto = pe.id_produto
     JOIN Clientes c ON pe.id_cliente = c.id_cliente
-    JOIN Produtos p ON m.id_produto = p.id
+    JOIN produtos p ON m.id_produto = p.id
     GROUP BY c.nome, p.nome
     ORDER BY c.nome;
   `;

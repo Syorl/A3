@@ -1,216 +1,151 @@
-/* Reset básico */
+/* Resetando margens e paddings padrão */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Estilo do Corpo */
+/* Corpo da página */
 body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #d7eae9, #f0f8f8);
-  color: #1a3d3d;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
   padding: 20px;
-  min-height: 100vh;
+  line-height: 1.6; /* Melhora a legibilidade do texto */
 }
 
-/* Container Geral */
-.container {
-  max-width: 1200px;
+/* Título principal */
+h1 {
+  text-align: center;
+  color: #4CAF50;
+  margin-bottom: 20px;
+  font-size: 2em; /* Aumenta o tamanho do título */
+}
+
+/* Formulário de cadastro */
+form {
+  max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Cabeçalho */
-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-header h1 {
-  font-size: 2.5rem;
-  color: #1a3d3d;
-}
-
-header p {
-  font-size: 1.2rem;
-  color: #5a7272;
-}
-
-/* Cards de Resumo */
-.card {
-  background-color: #ffffff;
-  color: #1a3d3d;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.card h2 {
-  margin-bottom: 15px;
-  font-size: 1.5rem;
-}
-
-.card p {
-  font-size: 1rem;
-  color: #3a5b5b;
-}
-
-/* Botão */
-.card button {
-  background-color: #1a3d3d;
-  color: #ffffff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.card button:hover {
-  background-color: #145555;
-}
-
-/* Estilo dos campos de input, textarea, select */
-label {
+form label {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
   display: block;
-  font-size: 1rem;
-  margin-bottom: 10px;
-  color: #3a5b5b;
 }
 
-/* Campos de entrada (input, select, textarea) */
-input[type="text"], input[type="number"], textarea, select {
+form input, form select {
   width: 100%;
   padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  box-sizing: border-box;
+  margin: 10px 0 20px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
-/* Ajustando o textarea para descrição e especificações técnicas */
-textarea {
-  resize: vertical;
-  min-height: 100px; /* Altura mínima para textareas */
+form input[type="number"], form select {
+  width: calc(100% - 22px); /* Ajuste para manter o alinhamento */
 }
 
-/* Melhorando a aparência dos campos de entrada ao focar */
-input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
-  outline: none;
-  border-color: #1a3d3d;
-}
-
-/* Estilo do datalist (opções do produto) */
-datalist {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-datalist option {
-  padding: 10px;
-  font-size: 1rem;
+form button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 16px;
+  margin-right: 10px;
+  transition: background-color 0.3s ease; /* Adiciona transição suave ao botão */
 }
 
-datalist option:hover {
-  background-color: #cce7e7;
+form button:hover {
+  background-color: #45a049;
 }
 
-/* Estilo da Tabela */
+form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Tabela de produtos */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 40px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-table thead {
-  background-color: #1a3d3d;
-  color: #ffffff;
-}
-
-table th,
-table td {
-  padding: 10px;
+table th, table td {
+  padding: 12px;
   text-align: left;
-  border: 1px solid #ccc;
+  border-bottom: 1px solid #ddd;
 }
 
-table tbody tr:nth-child(odd) {
-  background-color: #f0f8f8;
+table th {
+  background-color: #f2f2f2;
+  font-weight: bold; /* Adiciona negrito ao cabeçalho da tabela */
 }
 
-table tbody tr:nth-child(even) {
-  background-color: #d7eae9;
+table tr:hover {
+  background-color: #f9f9f9;
 }
 
-table tbody tr:hover {
-  background-color: #cce7e7;
-  cursor: pointer;
-}
-
-/* Rodapé Opcional */
-footer {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 0.9rem;
-  color: #5a7272;
-}
-
-/* Botão de Cadastro */
-button.btn-submit {
-  padding: 10px 20px;
-  background-color: #008cba;
+table td button {
+  padding: 5px 10px;
+  background-color: #ff7043;
   color: white;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button.btn-submit:hover {
-  background-color: #005f8a;
-}
-
-/* Mensagens de status */
-#status-message {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 5px;
-  text-align: center;
   font-size: 14px;
+  margin-right: 5px;
+  transition: background-color 0.3s ease; /* Adiciona transição suave ao botão */
 }
 
-#status-message.success {
-  background-color: #d4edda;
-  color: #155724;
+table td button:hover {
+  background-color: #f4511e;
 }
 
-#status-message.error {
-  background-color: #f8d7da;
-  color: #721c24;
+/* Estilos adicionais */
+h2 {
+  text-align: center;
+  margin-top: 50px;
+  color: #333;
 }
 
-/* Estilo das últimas duas caixas (ID do Fornecedor e Quantidade) */
-input#id_fornecedor,
-input#quantidade {
-  width: calc(50% - 10px);
-  display: inline-block;
-  margin-right: 10px;
+/* Responsividade */
+@media (max-width: 768px) {
+  form {
+    padding: 15px;
+  }
+
+  form input, form select, form button {
+    font-size: 14px;
+  }
+
+  table th, table td {
+    font-size: 14px;
+  }
 }
 
-input#quantidade {
-  margin-right: 0;
+/* Uniformização dos elementos do formulário */
+input, select {
+  display: block;
+  box-sizing: border-box;
+}
+
+input, select, button {
+  font-family: 'Arial', sans-serif; /* Garanta que todos os elementos usem a mesma fonte */
+}
+
+button {
+  width: 100%; /* Para alinhar os botões ao formulário */
+  margin: 10px 0; /* Adiciona espaçamento vertical */
 }
