@@ -3,10 +3,10 @@ const pool = require('../db');
 // Buscar todos os produtos
 const getAllProdutos = async (req, res) => {
   const query = `
-    SELECT p.id, p.nome, p.categoria, p.marca, f.nome AS fornecedor, p.quantidade 
-    FROM produtos p 
-    LEFT JOIN fornecedores f ON p.id_fornecedor = f.id_fornecedor
-  `;
+  SELECT p.id, p.nome, p.categoria, p.marca, f.nome AS fornecedor, p.quantidade
+  FROM Produtos p
+  LEFT JOIN fornecedores f ON p.id_fornecedor = f.id_fornecedor
+`;
   try {
     const [rows] = await pool.query(query);
     res.json(rows);
