@@ -1,10 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const relatoriosController = require('../controllers/relatoriosController');
+const {
+  produtosBaixoEstoque,
+  numeroProdutosPorCategoria,
+  numeroProdutosPorFornecedor
+} = require('../controllers/relatoriosController');
 
-router.get('/produtos-mais-vendidos', relatoriosController.produtosMaisVendidos);
-router.get('/produtos-baixo-estoque', relatoriosController.produtosBaixoEstoque);
-router.get('/consumo-medio-cliente', relatoriosController.consumoMedioCliente);
-router.get('/produto-por-cliente', relatoriosController.produtoPorCliente);
+// Rota para produtos abaixo do estoque mínimo
+router.get('/produtos-baixo-estoque', produtosBaixoEstoque);
+
+// Rota para número de produtos por categoria
+router.get('/numero-produtos-por-categoria', numeroProdutosPorCategoria);
+
+// Rota para número de produtos por fornecedor
+router.get('/numero-produtos-por-fornecedor', numeroProdutosPorFornecedor);
 
 module.exports = router;

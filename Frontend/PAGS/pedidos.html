@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão de Pedidos</title>
+  <link rel="stylesheet" href="../CSS/pedidos_styles.css">
+</head>
+<body>
+  <header>
+    <h1>Gestão de Pedidos</h1>
+  </header>
+
+  <main>
+    <section id="form-section">
+      <h2>Adicionar Pedido</h2>
+      <form id="pedidoForm">
+        <label for="id_cliente">Cliente ID:</label>
+        <input type="number" id="id_cliente" required>
+        
+        <label for="id_vendedor">Vendedor ID:</label>
+        <input type="number" id="id_vendedor" required>
+        
+        <label for="id_produto">Produto ID:</label>
+        <input type="number" id="id_produto" required>
+        
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" id="quantidade" required>
+        
+        <label for="valor">Valor:</label>
+        <input type="number" step="0.01" id="valor" required>
+        
+        <button type="submit">Salvar Pedido</button>
+      </form>
+    </section>
+
+    <section id="table-section">
+      <h2>Lista de Pedidos</h2>
+      <table id="pedidosTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Vendedor</th>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Valor</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Os pedidos serão inseridos aqui -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:3000/pedidos';
+
+    // Carregar pedidos
+    async function carregarPedidos() {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('Erro ao carregar pedidos');
+        const pedidos = await response.json();
+
+        const tabela = document.getElementById('pedidosTable').querySelector('tbody');
+        tabela.innerHTML = ''; // Limpa a tabela
+
+        pedidos.forEach(pedido => {
+          const row = tabela.insertRow();
+
+          row.innerHTML = `
+            <td>${pedido.id_pedido}</td>
+            <td>${pedido.cliente}</td>
+            <td>${pedido.vendedor}</td>
+            <td>${pedido.produto}</td>
+            <td>${pedido.quantidade}</td>
+            <td>${pedido.valor}</td>
+            <td>
+              <button onclick="editarPedido(${pedido.id_pedido})">Editar</button>
+              <button onclick="deletarPedido(${pedido.id_pedido})">Deletar</button>
+            </td>
+          `;
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    // Criar pedido
+    async function criarPedido(event) {
+      event.preventDefault();
+
+      const data = {
+        id_cliente: document.getElementById('id_cliente').value,
+        id_vendedor: document.getElementById('id_vendedor').value,
+        id_produto: document.getElementById('id_produto').value,
+        quantidade: document.getElementById('quantidade').value,
+        valor: document.getElementById('valor').value
+      };
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) throw new Error('Erro ao criar pedido');
+        alert('Pedido criado com sucesso!');
+        carregarPedidos();
+        document.getElementById('pedidoForm').reset();
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao criar pedido.');
+      }
+    }
+
+    // Deletar pedido
+    async function deletarPedido(id) {
+      try {
+        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Erro ao deletar pedido');
+        alert('Pedido deletado com sucesso!');
+        carregarPedidos();
+      } catch (error) {
+        console.error(error);
+        alert('Erro ao deletar pedido.');
+      }
+    }
+
+    document.getElementById('pedidoForm').addEventListener('submit', criarPedido);
+
+    // Inicializa a tabela ao carregar a página
+    window.onload = carregarPedidos;
+  </script>
+</body>
+</html>

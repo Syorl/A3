@@ -13,49 +13,47 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-
 // Importação de Rotas
 const clientesRoutes = require("./routes/clientesRoutes");
 const fornecedoresRoutes = require("./routes/fornecedoresRoutes");
 const vendedoresRoutes = require("./routes/vendedoresRoutes");
-const pedidosRoutes = require("./routes/pedidosRoutes");
 const relatorioRoutes = require("./routes/relatorioRoutes");
-const movimentacaoRoutes = require("./routes/movimentacaoRoutes");
 const produtoRoutes = require("./routes/produtoRoutes");
+const pedidosRoutes = require("./routes/pedidosRoutes");
 
 // Uso das Rotas
-app.use("/clientes", clientesRoutes);
-app.use("/fornecedores", fornecedoresRoutes);
-app.use("/vendedores", vendedoresRoutes);
-app.use("/pedidos", pedidosRoutes);
-app.use("/relatorio", relatorioRoutes);
-app.use('/produto', produtoRoutes);  // Consistente com o nome da rota principal
-app.use('/produtos', produtoRoutes); // Alternativa para rotas de produtos
-app.use('/movimentacao', movimentacaoRoutes);
+app.use("/clientes", clientesRoutes);       // Endpoints para clientes
+app.use("/fornecedores", fornecedoresRoutes); // Endpoints para fornecedores
+app.use("/vendedores", vendedoresRoutes);   // Endpoints para vendedores
+app.use("/relatorios", relatorioRoutes);    // Corrigi para plural, mais semântico
+app.use("/produtos", produtoRoutes);        // Consistência para rotas relacionadas a produtos
+app.use("/pedidos", pedidosRoutes);        // Consistência para rotas relacionadas a produtos
 
 // Servir arquivos estáticos da pasta Frontend
-app.use(express.static(path.join(__dirname, 'Frontend')));
+app.use(express.static(path.join(__dirname, "Frontend")));
 
 // Rota principal para servir o index.html
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, 'Frontend', 'index.html'));
+  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
 });
 
 // Iniciar Servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`Conectado ao banco de dados: ${process.env.DB_NAME || "mysqlloja"}`);
+  console.log(
+    `Conectado ao banco de dados: ${process.env.DB_NAME || "mysqlloja"}`
+  );
 
-  // Abrir o navegador padrão
+  // Abrir o navegador padrão automaticamente
   const url = `http://localhost:${PORT}`;
   switch (process.platform) {
-    case 'darwin':
+    case "darwin": // macOS
       exec(`open ${url}`);
       break;
-    case 'win32':
+    case "win32": // Windows
       exec(`start ${url}`);
       break;
-    default:
+    default: // Linux
       exec(`xdg-open ${url}`);
   }
 });

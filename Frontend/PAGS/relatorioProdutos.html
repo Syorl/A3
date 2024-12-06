@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios de Vendas</title>
+    <title>Relatórios de Produtos</title>
     <link rel="stylesheet" href="../CSS/relatorioProdutos_styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
-        <h1>Relatórios de Vendas</h1>
+        <h1>Relatórios de Produtos</h1>
         <nav>
             <ul>
-                <li><a href="#" onclick="loadReport('produtos-mais-vendidos')">Produtos Mais Vendidos</a></li>
-                <li><a href="#" onclick="loadReport('produtos-baixo-estoque')">Produtos com Baixo Estoque</a></li>
-                <li><a href="#" onclick="loadReport('consumo-medio-cliente')">Consumo Médio do Cliente</a></li>
-                <li><a href="#" onclick="loadReport('produto-por-cliente')">Produto por Cliente</a></li>
+                <li><a href="#" id="produtos-baixo-estoque" onclick="loadReport('produtos-baixo-estoque')">Produtos com Baixo Estoque</a></li>
+                <li><a href="#" id="numero-produtos-por-categoria" onclick="loadReport('numero-produtos-por-categoria')">Número de Produtos por Categoria</a></li>
+                <li><a href="#" id="numero-produtos-por-fornecedor" onclick="loadReport('numero-produtos-por-fornecedor')">Número de Produtos por Fornecedor</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
         <section id="report-container">
-            <h2>Selecione um relatório</h2>
+            <h2 id="report-title">Selecione um relatório</h2>
             <div id="report-data">
                 <!-- O gráfico será renderizado aqui -->
                 <canvas id="reportChart"></canvas>
@@ -31,49 +30,78 @@
     </main>
 
     <footer>
-        <p>&copy; 2024 - Relatórios de Vendas</p>
+        <p>&copy; 2024 - Relatórios de Produtos</p>
     </footer>
 
     <script>
-        let reportChartInstance = null; // Variável para armazenar a instância do gráfico
+        let reportChartInstance = null;
 
         function loadReport(reportType) {
-            fetch(`http://localhost:3000/relatorio/${reportType}`)
+            // Atualizar a navegação ativa
+            const links = document.querySelectorAll("nav a");
+            links.forEach(link => link.classList.remove("active"));
+            document.getElementById(reportType).classList.add("active");
+
+            // Atualizar o título do relatório
+            const titles = {
+                "produtos-baixo-estoque": "Produtos com Baixo Estoque",
+                "numero-produtos-por-categoria": "Número de Produtos por Categoria",
+                "numero-produtos-por-fornecedor": "Número de Produtos por Fornecedor"
+            };
+            document.getElementById("report-title").textContent = titles[reportType] || "Relatório";
+
+            // Fazer a requisição ao servidor
+            fetch(`http://localhost:3000/relatorios/${reportType}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Se já existir um gráfico, destrua-o antes de criar um novo
+                    // Limpar o gráfico anterior, se existir
                     if (reportChartInstance) {
                         reportChartInstance.destroy();
                     }
 
+                    // Preparar os dados para o gráfico
                     let labels = [];
                     let values = [];
+                    let labelKey = "";
+                    let valueKey = "";
 
-                    // Preenche os dados a partir da resposta do backend
+                    if (reportType === "produtos-baixo-estoque") {
+                        labelKey = "nome";
+                        valueKey = "estoque";
+                    } else if (reportType === "numero-produtos-por-categoria") {
+                        labelKey = "categoria";
+                        valueKey = "total_produtos";
+                    } else if (reportType === "numero-produtos-por-fornecedor") {
+                        labelKey = "fornecedor";
+                        valueKey = "total_produtos";
+                    }
+
                     data.forEach(item => {
-                        labels.push(item.nome || item.cliente); // Pega o nome do produto ou cliente
-                        values.push(item.vendas || item.consumo_medio || item.estoque || item.quantidade); // Pega o valor do relatório
+                        labels.push(item[labelKey]);
+                        values.push(item[valueKey]);
                     });
 
+                    // Criar o gráfico
                     const ctx = document.getElementById('reportChart').getContext('2d');
                     reportChartInstance = new Chart(ctx, {
-                        type: 'bar', // Tipo de gráfico
+                        type: 'bar',
                         data: {
-                            labels: labels, 
+                            labels: labels,
                             datasets: [{
-                                label: reportType, 
-                                data: values, 
-                                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Cor de fundo das barras
-                                borderColor: 'rgba(75, 192, 192, 1)', // Cor das bordas das barras
+                                label: titles[reportType],
+                                data: values,
+                                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
                                 borderWidth: 1
                             }]
                         },
                         options: {
-                            responsive: true, // Tornar o gráfico responsivo
+                            responsive: true,
+                            plugins: {
+                                legend: { position: 'top' }
+                            },
                             scales: {
-                                y: {
-                                    beginAtZero: true
-                                }
+                                y: { beginAtZero: true }
                             }
                         }
                     });

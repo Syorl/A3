@@ -1,15 +1,17 @@
 /* Estilo geral da página */
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #f4f6f8;
 }
 
 header {
-  background-color: #007bff;
+  background-color: #004085;
   color: white;
-  padding: 1rem;
+  padding: 1.5rem;
   text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 nav ul {
@@ -27,6 +29,17 @@ nav a {
   text-decoration: none;
   color: white;
   font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+}
+
+nav a:hover {
+  background-color: white;
+  color: #004085;
+  border-color: white;
 }
 
 main {
@@ -37,25 +50,40 @@ main {
 footer {
   text-align: center;
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: #dee2e6;
+  font-size: 0.9rem;
   margin-top: 2rem;
 }
 
 #report-container {
   margin-top: 2rem;
-  width: 90%; /* Reduzir a largura para melhor adaptação */
-  max-width: 1200px; /* Limitar a largura máxima */
+  width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+#report-data {
+  margin-top: 1rem;
 }
 
 canvas {
-  width: 100% !important; /* Garantir que o gráfico ocupe toda a largura */
-  height: 500px !important; /* Aumentar a altura para o gráfico ficar maior */
+  width: 100% !important;
+  height: 450px !important;
   margin: 0 auto;
 }
 
-/* Adicionar bordas para o gráfico */
 #reportChart {
-  border: 1px solid #ddd;
+  border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Adicionar animações e detalhes extras */
+nav a.active {
+  background-color: #d4edda;
+  color: #155724;
+  border-color: #c3e6cb;
 }

@@ -3,9 +3,8 @@ const pool = require('../db');
 // Buscar todos os produtos
 const getAllProdutos = async (req, res) => {
   const query = `
-    SELECT p.id_produto, p.nome, p.categoria, p.marca, f.nome AS fornecedor, p.quantidade
+    SELECT p.id_produto, p.nome, p.categoria, p.marca, p.quantidade, p.modelo, p.valor
     FROM produtos p
-    LEFT JOIN Fornecedores f ON p.id_fornecedor = f.id_fornecedor
   `;
   try {
     const [rows] = await pool.query(query);
@@ -20,9 +19,8 @@ const getAllProdutos = async (req, res) => {
 const getProdutoById = async (req, res) => {
   const { id } = req.params; // Utilizando req para obter o ID da rota
   const query = `
-    SELECT p.id_produto, p.nome, p.categoria, p.marca, f.nome AS fornecedor, p.quantidade 
+    SELECT p.id_produto, p.nome, p.categoria, p.marca, p.quantidade
     FROM produtos p 
-    LEFT JOIN Fornecedores f ON p.id_fornecedor = f.id_fornecedor 
     WHERE p.id_produto = ?
   `;
   try {
@@ -40,13 +38,13 @@ const getProdutoById = async (req, res) => {
 
 // Criar um novo produto
 const createProduto = async (req, res) => {
-  const { nome, descricao, categoria, marca, modelo, quantidade, valor, id_fornecedor } = req.body; // Utilizando req para obter os dados do corpo da solicitação
+  const { nome, descricao, categoria, marca, modelo, quantidade, valor } = req.body; // Utilizando req para obter os dados do corpo da solicitação
   const query = `
-    INSERT INTO produtos (nome, descricao, categoria, marca, modelo, quantidade, valor, id_fornecedor) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO produtos (nome, descricao, categoria, marca, modelo, quantidade, valor) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
   try {
-    const [result] = await pool.query(query, [nome, descricao, categoria, marca, modelo, quantidade, valor, id_fornecedor]);
+    const [result] = await pool.query(query, [nome, descricao, categoria, marca, modelo, quantidade, valor]);
     res.status(201).json({
       id_produto: result.insertId,
       nome,
@@ -56,7 +54,6 @@ const createProduto = async (req, res) => {
       modelo,
       quantidade,
       valor,
-      id_fornecedor,
     });
   } catch (error) {
     console.error("Erro ao criar produto:", error.stack);
@@ -66,6 +63,7 @@ const createProduto = async (req, res) => {
 
 // Atualizar um produto
 const updateProduto = async (req, res) => {
+console.log(req.body)
   const { id } = req.params; // Utilizando req para obter o ID da rota
   const { nome, descricao, categoria, marca, modelo, quantidade, valor } = req.body; // Utilizando req para obter os dados do corpo da solicitação
   const query = `
@@ -94,7 +92,7 @@ const updateProduto = async (req, res) => {
   }
 };
 
-//deletar produto
+// Deletar produto
 const deleteProduto = async (req, res) => {
   const { id } = req.params; // Obtém o ID da URL da rota
 
@@ -120,15 +118,12 @@ const deleteProduto = async (req, res) => {
   }
 };
 
-
-
 // Buscar produtos por critérios de consulta
-const consultaProdutos = async (req, res) => { console.log('sakdaksdasd')
-  const { nome, categoria, marca, fornecedor } = req.query; // Utilizando req para obter os parâmetros de consulta
+const consultaProdutos = async (req, res) => {
+  const { nome, categoria, marca } = req.query; // Retirei 'fornecedor'
   let query = `
-    SELECT p.id_produto, p.nome, p.categoria, p.marca, f.nome AS fornecedor, p.quantidade 
+    SELECT p.id_produto, p.nome, p.categoria, p.marca, p.quantidade 
     FROM produtos p 
-    LEFT JOIN Fornecedores f ON p.id_fornecedor = f.id_fornecedor 
     WHERE 1=1
   `;
   const params = [];
@@ -145,13 +140,8 @@ const consultaProdutos = async (req, res) => { console.log('sakdaksdasd')
     query += " AND p.marca LIKE ?";
     params.push(`%${marca}%`);
   }
-  if (fornecedor) {
-    query += " AND f.nome LIKE ?";
-    params.push(`%${fornecedor}%`);
-  }
-  console.log(params)  
-console.log(query)
- try {
+
+  try {
     const [rows] = await pool.query(query, params);
     res.json(rows);
   } catch (error) {

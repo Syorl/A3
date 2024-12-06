@@ -19,9 +19,7 @@ CREATE TABLE IF NOT EXISTS produtos (
     marca VARCHAR(255) NOT NULL,
     modelo VARCHAR(255) NOT NULL,
     quantidade INT NOT NULL,
-    valor DECIMAL(10, 2) NOT NULL,
-    id_fornecedor INT NOT NULL,
-    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedores(id_fornecedor) ON DELETE CASCADE
+    valor DECIMAL(10, 2) NOT NULL
 );
 
 -- Tabela de Clientes
@@ -41,6 +39,36 @@ CREATE TABLE IF NOT EXISTS Vendedores (
     email VARCHAR(100) NOT NULL
 );
 
+CREATE TABLE pedidos (
+  id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+  id_cliente INT NOT NULL,
+  id_vendedor INT NOT NULL,
+  id_produto INT NOT NULL,
+  quantidade INT NOT NULL,
+  valor DECIMAL(10, 2) NOT NULL,
+  FOREIGN KEY (id_cliente) REFERENCES Clientes(id_cliente),
+  FOREIGN KEY (id_vendedor) REFERENCES Vendedores(id_vendedor),
+  FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
+);
+
+-- Consulta para produtos abaixo do estoque mínimo
+SELECT nome, quantidade AS estoque
+FROM produtos
+WHERE quantidade <= 10 -- Produtos com estoque menor ou igual a 10
+ORDER BY quantidade ASC; -- Ordenados por quantidade em ordem crescente
+
+-- Consulta para contar número de produtos por categoria
+SELECT categoria, COUNT(*) AS total_produtos
+FROM produtos
+GROUP BY categoria -- Agrupa por categoria
+ORDER BY total_produtos DESC; -- Ordena pelo total em ordem decrescente
+
+-- Consulta para contar número de produtos por fornecedor
+SELECT f.nome AS fornecedor, COUNT(p.id_produto) AS total_produtos
+FROM Fornecedores f
+JOIN produtos p ON f.id_fornecedor = p.id_fornecedor -- Relaciona produtos com fornecedores
+GROUP BY f.nome -- Agrupa por nome do fornecedor
+ORDER BY total_produtos DESC; -- Ordena pelo total em ordem decrescente
 
 
 -- Inserir fornecedores fictícios
@@ -53,13 +81,13 @@ VALUES
 ('OptiGear', '55.666.777/0001-88', 'Rua Épsilon, 500');
 
 -- Inserir produtos de tecnologia
-INSERT IGNORE INTO produtos (id_produto, nome, descricao, categoria, marca, modelo, quantidade, valor, id_fornecedor)
+INSERT IGNORE INTO produtos (id_produto, nome, descricao, categoria, marca, modelo, quantidade, valor)
 VALUES
-('1','Notebook Gamer', 'Notebook com alta performance para jogos', 'Informática', 'Dell', 'G5 5590', 10, 5500.00, 1),
-('2','Memória RAM 8GB', 'Memória RAM DDR4 8GB', 'Hardware', 'Corsair', 'Vengeance LPX', 20, 350.00, 2),
-('3','PC Desktop', 'Computador desktop para uso geral', 'Informática', 'HP', 'Pavilion', 15, 2500.00, 3),
-('4','Monitor 24"', 'Monitor LED 24 polegadas Full HD', 'Periféricos', 'Samsung', 'T35F', 25, 800.00, 4),
-('5','Smartphone', 'Smartphone com tela de 6.5 polegadas', 'Eletrônicos', 'Apple', 'iPhone 13', 5, 4000.00, 5);
+('1','Notebook Gamer', 'Notebook com alta performance para jogos', 'Informática', 'Dell', 'G5 5590', 10, 5500.00),
+('2','Memória RAM 8GB', 'Memória RAM DDR4 8GB', 'Hardware', 'Corsair', 'Vengeance LPX', 20, 350.00),
+('3','PC Desktop', 'Computador desktop para uso geral', 'Informática', 'HP', 'Pavilion', 15, 2500.00),
+('4','Monitor 24"', 'Monitor LED 24 polegadas Full HD', 'Periféricos', 'Samsung', 'T35F', 25, 800.00),
+('5','Smartphone', 'Smartphone com tela de 6.5 polegadas', 'Eletrônicos', 'Apple', 'iPhone 13', 5, 4000.00);
 
 -- Inserir clientes
 INSERT IGNORE INTO Clientes (nome, cpf, endereco, email)

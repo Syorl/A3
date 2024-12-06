@@ -1,0 +1,26 @@
+# Dependências do Node.js
+/node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Diretórios de build
+/dist/
+/build/
+
+# Arquivos de dependência local
+package-lock.json
+yarn.lock
+
+# Arquivos de configuração do editor
+/.vscode/
+/.idea/
+
+# Ambiente de desenvolvimento
+/.env
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

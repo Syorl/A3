@@ -26,13 +26,10 @@
       <input type="number" id="quantidade" name="quantidade" required>
       <label for="valor">Valor:</label>
       <input type="number" step="0.01" id="valor" name="valor" required>
-      <label for="id_fornecedor">Fornecedor:</label>
-      <select id="id_fornecedor" name="id_fornecedor" required>
-        <option value="">Selecione um fornecedor</option> <!-- Fornecedores serão inseridos dinamicamente aqui -->
-      </select>
     </div>
     <div class="button-group">
-      <button type="submit">Cadastrar Produto</button>
+      <button type="button" id="cadastrarProdutoBtn">Cadastrar Produto</button>
+
     </div>
   </form>
   <h2>Lista de Produtos</h2>
@@ -46,97 +43,80 @@
         <th>Modelo</th>
         <th>Quantidade</th>
         <th>Valor</th>
-        <th>Fornecedor</th>
         <th>Ações</th> <!-- Coluna para botões de ação -->
       </tr>
     </thead>
     <tbody> <!-- Produtos serão inseridos dinamicamente aqui --> </tbody>
 
     <script>
-      // Função para carregar produtos
-      async function carregarProdutos() {
-        try {
-          const response = await fetch('http://localhost:3000/produto'); // Rota para obter todos os produtos
-          if (response.ok) {
-            const produtos = await response.json();
-            const produtosTableBody = document.getElementById('produtosTable').getElementsByTagName('tbody')[0];
-            produtosTableBody.innerHTML = ''; // Limpa a tabela antes de adicionar novos produtos
+     async function carregarProdutos() {
+  try {
+    const response = await fetch('http://localhost:3000/produtos'); // Rota para obter todos os produtos
+    
+    if (!response.ok) {
+      throw new Error(`Erro ao carregar produtos: ${response.status} - ${response.statusText}`);
+    }
 
-            produtos.forEach(produto => {
-              const row = produtosTableBody.insertRow(); // Cria uma nova linha na tabela
+    const produtos = await response.json();
+    const produtosTable = document.getElementById('produtosTable');
 
-              // Cria as células para cada coluna
-              row.insertCell(0).textContent = produto.id; // ID do produto
-              row.insertCell(1).textContent = produto.nome;
-              row.insertCell(2).textContent = produto.categoria;
-              row.insertCell(3).textContent = produto.marca;
-              row.insertCell(4).textContent = produto.modelo;
-              row.insertCell(5).textContent = produto.quantidade;
-              row.insertCell(6).textContent = produto.valor;
+    if (!produtosTable) {
+      console.error('Tabela de produtos não encontrada no DOM.');
+      return;
+    }
 
-              // Aqui, usamos o nome do fornecedor ao invés do ID
-              const fornecedorNome = window.fornecedores[produto.id_fornecedor] || 'Desconhecido';
-              row.insertCell(7).textContent = fornecedorNome;
+    const produtosTableBody = produtosTable.getElementsByTagName('tbody')[0];
+    produtosTableBody.innerHTML = ''; // Limpa a tabela antes de adicionar novos produtos
 
-              // Coloca os botões de ação (Deletar e Atualizar) na tabela
-              const actionCell = row.insertCell(8);
-              actionCell.innerHTML = `
-                <button onclick="editarProduto(${produto.id})">Atualizar</button>
-                <button onclick="deletarProduto(${produto.id})">Deletar</button>
-              `;
-            });
-          } else {
-            console.error('Erro ao carregar produtos:', response.statusText);
-          }
-        } catch (error) {
-          console.error('Erro ao buscar produtos:', error);
-        }
-      }
+    if (produtos.length === 0) {
+      produtosTableBody.innerHTML = '<tr><td colspan="8">Nenhum produto encontrado.</td></tr>';
+      return;
+    }
 
-      // Função para carregar fornecedores
-      async function carregarFornecedores() {
-        try {
-          const response = await fetch('http://localhost:3000/fornecedores'); // Verifique se esta URL está correta
-          if (response.ok) {
-            const fornecedores = await response.json();
+    produtos.forEach(produto => {
+      const row = produtosTableBody.insertRow(); // Cria uma nova linha na tabela
 
-            // Armazenar fornecedores em um objeto onde a chave é o ID
-            window.fornecedores = {};
+      // Cria as células para cada coluna
+      row.insertCell(0).textContent = produto.id_produto; // ID do produto
+      row.insertCell(1).textContent = produto.nome;
+      row.insertCell(2).textContent = produto.categoria;
+      row.insertCell(3).textContent = produto.marca;
+      row.insertCell(4).textContent = produto.modelo;
+      row.insertCell(5).textContent = produto.quantidade;
+      row.insertCell(6).textContent = produto.valor;
 
-            const fornecedorSelect = document.getElementById('id_fornecedor');
+      // Coloca os botões de ação (Deletar e Atualizar) na tabela
+      const actionCell = row.insertCell(7); // Corrigido índice para 7
+      actionCell.innerHTML = `
+        <button onclick="editarProduto(${produto.id_produto})">Atualizar</button>
+        <button onclick="deletarProduto(${produto.id_produto})">Deletar</button>
+      `;
+    });
+  } catch (error) {
+    console.error('Erro ao buscar produtos:', error.message);
+  }
+}
 
-            // Limpa as opções existentes no select
-            fornecedorSelect.innerHTML = '<option value="">Selecione um fornecedor</option>';
 
-            // Adiciona cada fornecedor como uma opção no select
-            fornecedores.forEach(fornecedor => {
-              // Armazenando fornecedor no objeto
-              window.fornecedores[fornecedor.id_fornecedor] = fornecedor.nome;
 
-              // Criando a opção para o select
-              const option = document.createElement('option');
-              option.value = fornecedor.id_fornecedor;
-              option.textContent = fornecedor.nome;
-              fornecedorSelect.appendChild(option);
-            });
-          } else {
-            console.error("Erro ao carregar fornecedores:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Erro ao carregar fornecedores:", error);
-        }
-      }
+     // Função para adicionar um novo produto
+function adicionarProduto(event) {
+  event.preventDefault(); // Impede o comportamento padrão do formulário
 
-      // Função para adicionar um novo produto
-function adicionarProduto() {
-  const nome = document.getElementById('nome').value;
-  const descricao = document.getElementById('descricao').value;
-  const categoria = document.getElementById('categoria').value;
-  const marca = document.getElementById('marca').value;
-  const modelo = document.getElementById('modelo').value;
-  const quantidade = document.getElementById('quantidade').value;
-  const valor = document.getElementById('valor').value;
-  const id_fornecedor = document.getElementById('id_fornecedor').value; // Supondo que tenha um campo id_fornecedor
+  // Obtenha os valores dos campos usando os IDs corretos
+  const nome = document.getElementById('produtoNome').value.trim();
+  const descricao = document.getElementById('descricao').value.trim();
+  const categoria = document.getElementById('categoria').value.trim();
+  const marca = document.getElementById('marca').value.trim();
+  const modelo = document.getElementById('modelo').value.trim();
+  const quantidade = document.getElementById('quantidade').value.trim();
+  const valor = document.getElementById('valor').value.trim();
+
+  // Validação simples para campos obrigatórios
+  if (!nome || !descricao || !categoria || !marca || !modelo || !quantidade || !valor) {
+    alert('Por favor, preencha todos os campos antes de cadastrar.');
+    return;
+  }
 
   const data = {
     nome,
@@ -144,28 +124,45 @@ function adicionarProduto() {
     categoria,
     marca,
     modelo,
-    quantidade,
-    valor,
-    id_fornecedor
+    quantidade: Number(quantidade), // Certifica-se de que é numérico
+    valor: parseFloat(valor)       // Certifica-se de que é um número decimal
   };
 
-  fetch('http://localhost:3000/produto/adicionar', {
+  // Envia os dados para o backend
+  fetch('http://localhost:3000/produtos/adicionar', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data)
   })
-  .then(response => response.json())
-  .then(data => {
-    alert('Produto adicionado com sucesso!');
-    console.log(data);
-  })
-  .catch(error => {
-    console.error('Erro ao adicionar produto:', error);
-    alert('Erro ao adicionar produto.');
-  });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Erro ao adicionar produto: ${response.status} - ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      alert('Produto adicionado com sucesso!');
+      console.log('Produto cadastrado:', data);
+
+      // Opcional: Atualiza a lista de produtos
+      if (typeof carregarProdutos === 'function') {
+        carregarProdutos();
+      }
+
+      // Limpa o formulário
+      document.getElementById('produtoForm').reset();
+    })
+    .catch(error => {
+      console.error('Erro ao adicionar produto:', error);
+      alert('Erro ao adicionar produto. Tente novamente.');
+    });
 }
+
+// Associa o botão ao evento
+document.getElementById('cadastrarProdutoBtn').addEventListener('click', adicionarProduto);
+
 
 
       // Função para deletar um produto
@@ -173,8 +170,8 @@ function adicionarProduto() {
 function deletarProduto(id) {
   const confirmacao = confirm('Tem certeza que deseja excluir este produto?');
   if (!confirmacao) return;
-
-  fetch(`http://localhost:3000/produto/${id}`, {
+  alert(id)
+  fetch(`http://localhost:3000/produtos/${id}`, {
     method: 'DELETE',
   })
   .then(response => {
@@ -192,48 +189,72 @@ function deletarProduto(id) {
 
 
 
-      // Função para editar um produto
-function editarProduto(id) {
-  const nome = document.getElementById('nome').value;
-  const descricao = document.getElementById('descricao').value;
-  const categoria = document.getElementById('categoria').value;
-  const marca = document.getElementById('marca').value;
-  const modelo = document.getElementById('modelo').value;
-  const quantidade = document.getElementById('quantidade').value;
-  const valor = document.getElementById('valor').value;
+async function editarProduto(id) {
+  try {
+    // Obtém os valores do formulário
+    const nome = document.getElementById('produtoNome').value.trim();
+    const descricao = document.getElementById('descricao').value.trim();
+    const categoria = document.getElementById('categoria').value.trim();
+    const marca = document.getElementById('marca').value.trim();
+    const modelo = document.getElementById('modelo').value.trim();
+    const quantidade = document.getElementById('quantidade').value.trim();
+    const valor = document.getElementById('valor').value.trim();
 
-  const data = {
-    nome,
-    descricao,
-    categoria,
-    marca,
-    modelo,
-    quantidade,
-    valor
-  };
+    // Buscar os dados antigos do produto
+    const response = await fetch(`http://localhost:3000/produtos/${id}`);
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar produto: ${response.status} - ${response.statusText}`);
+    }
 
-  fetch(`http://localhost:3000/produto/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data)
-  })
-  .then(response => response.json())
-  .then(data => {
+    const produtoAntigo = await response.json();
+
+    // Cria o objeto com apenas os campos preenchidos
+    const data = {};
+    if (nome) data.nome = nome;
+    if (descricao) data.descricao = descricao;
+    if (categoria) data.categoria = categoria;
+    if (marca) data.marca = marca;
+    if (modelo) data.modelo = modelo;
+    if (quantidade) data.quantidade = Number(quantidade); // Apenas se informado
+    if (valor) data.valor = parseFloat(valor);           // Apenas se informado
+
+    // Mescla com os valores antigos
+    const produtoAtualizado = { ...produtoAntigo, ...data };
+    console.log(produtoAtualizado)
+    // Envia os dados atualizados ao backend
+    const updateResponse = await fetch(`http://localhost:3000/produtos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(produtoAtualizado)
+    });
+
+    if (!updateResponse.ok) {
+      throw new Error(`Erro ao atualizar produto: ${updateResponse.status} - ${updateResponse.statusText}`);
+    }
+
+    const updatedProduto = await updateResponse.json();
     alert('Produto atualizado com sucesso!');
-    console.log(data);
-  })
-  .catch(error => {
+    console.log('Produto atualizado:', updatedProduto);
+
+    // Opcional: Atualiza a lista de produtos
+    if (typeof carregarProdutos === 'function') {
+      carregarProdutos();
+    }
+  } catch (error) {
     console.error('Erro ao atualizar produto:', error);
-    alert('Erro ao atualizar produto.');
-  });
+    alert('Erro ao atualizar produto. Tente novamente.');
+  }
 }
 
-      // Carregar fornecedores e produtos ao carregar a página
+
+
+
+      // Carregar produtos ao carregar a página
       window.onload = () => {
         carregarProdutos();
-        carregarFornecedores(); // Carrega fornecedores
+      
       };
 
 
