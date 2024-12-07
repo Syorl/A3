@@ -15,7 +15,6 @@ app.use(express.json());
 
 // Importação de Rotas
 const clientesRoutes = require("./routes/clientesRoutes");
-const fornecedoresRoutes = require("./routes/fornecedoresRoutes");
 const vendedoresRoutes = require("./routes/vendedoresRoutes");
 const relatorioRoutes = require("./routes/relatorioRoutes");
 const produtoRoutes = require("./routes/produtoRoutes");
@@ -23,7 +22,6 @@ const pedidosRoutes = require("./routes/pedidosRoutes");
 
 // Uso das Rotas
 app.use("/clientes", clientesRoutes);       // Endpoints para clientes
-app.use("/fornecedores", fornecedoresRoutes); // Endpoints para fornecedores
 app.use("/vendedores", vendedoresRoutes);   // Endpoints para vendedores
 app.use("/relatorios", relatorioRoutes);    // Corrigi para plural, mais semântico
 app.use("/produtos", produtoRoutes);        // Consistência para rotas relacionadas a produtos
