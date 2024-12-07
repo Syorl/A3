@@ -15,6 +15,9 @@
                 <li><a href="#" id="produtos-baixo-estoque" onclick="loadReport('produtos-baixo-estoque')">Produtos com Baixo Estoque</a></li>
                 <li><a href="#" id="numero-produtos-por-categoria" onclick="loadReport('numero-produtos-por-categoria')">Número de Produtos por Categoria</a></li>
                 <li><a href="#" id="numero-produtos-por-fornecedor" onclick="loadReport('numero-produtos-por-fornecedor')">Número de Produtos por Fornecedor</a></li>
+                <li><a href="#" id="produtos-mais-vendidos" onclick="loadReport('produtos-mais-vendidos')">Produtos Mais Vendidos</a></li>
+                <li><a href="#" id="produtos-por-cliente" onclick="loadReport('produtos-por-cliente')">Produtos por Cliente</a></li>
+                <li><a href="#" id="consumo-medio-cliente" onclick="loadReport('consumo-medio-cliente')">Consumo Médio por Cliente</a></li>
             </ul>
         </nav>
     </header>
@@ -46,7 +49,10 @@
             const titles = {
                 "produtos-baixo-estoque": "Produtos com Baixo Estoque",
                 "numero-produtos-por-categoria": "Número de Produtos por Categoria",
-                "numero-produtos-por-fornecedor": "Número de Produtos por Fornecedor"
+                "numero-produtos-por-fornecedor": "Número de Produtos por Fornecedor",
+                "produtos-mais-vendidos": "Produtos Mais Vendidos",
+                "produtos-por-cliente": "Produtos por Cliente",
+                "consumo-medio-cliente": "Consumo Médio por Cliente"
             };
             document.getElementById("report-title").textContent = titles[reportType] || "Relatório";
 
@@ -74,6 +80,15 @@
                     } else if (reportType === "numero-produtos-por-fornecedor") {
                         labelKey = "fornecedor";
                         valueKey = "total_produtos";
+                    } else if (reportType === "produtos-mais-vendidos") {
+                        labelKey = "nome";
+                        valueKey = "total_vendido";
+                    } else if (reportType === "produtos-por-cliente") {
+                        labelKey = "cliente";
+                        valueKey = "total_comprado";
+                    } else if (reportType === "consumo-medio-cliente") {
+                        labelKey = "cliente";
+                        valueKey = "consumo_medio";
                     }
 
                     data.forEach(item => {
