@@ -34,23 +34,6 @@ const numeroProdutosPorCategoria = async (req, res) => {
   }
 };
 
-// Número de produtos por fornecedor
-const numeroProdutosPorFornecedor = async (req, res) => {
-  const query = `
-    SELECT f.nome AS fornecedor, COUNT(p.id_produto) AS total_produtos
-    FROM Fornecedores f
-    JOIN produtos p ON f.id_fornecedor = p.id_fornecedor
-    GROUP BY f.nome
-    ORDER BY total_produtos DESC;
-  `;
-  try {
-    const [results] = await db.query(query);
-    res.json(results);
-  } catch (err) {
-    console.error("Erro ao consultar o banco de dados:", err.stack);
-    res.status(500).json({ message: "Erro ao gerar o relatório de número de produtos por fornecedor", error: err });
-  }
-};
 
 // Relatório dos Produtos Mais Vendidos
 const produtosMaisVendidos = async (req, res) => {
@@ -110,7 +93,6 @@ const consumoMedioCliente = async (req, res) => {
 module.exports = {
   produtosBaixoEstoque,
   numeroProdutosPorCategoria,
-  numeroProdutosPorFornecedor,
   produtosMaisVendidos,
   produtosPorCliente,
   consumoMedioCliente

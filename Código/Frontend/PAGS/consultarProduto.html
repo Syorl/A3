@@ -17,10 +17,6 @@
 
     <label for="marca">Marca:</label>
     <input type="text" id="marca" name="marca">
-
-    <label for="fornecedor">Fornecedor:</label>
-    <input type="text" id="fornecedor" name="fornecedor">
-
     <button type="submit">Buscar Produtos</button>
   </form>
 
@@ -32,7 +28,6 @@
         <th>Nome</th>
         <th>Categoria</th>
         <th>Marca</th>
-        <th>Fornecedor</th>
         <th>Quantidade</th>
       </tr>
     </thead>
@@ -52,14 +47,13 @@
       const nome = document.getElementById('nome').value;
       const categoria = document.getElementById('categoria').value;
       const marca = document.getElementById('marca').value;
-      const fornecedor = document.getElementById('fornecedor').value;
-
+    
       // Construindo a query string com os parâmetros de filtro
       const queryParams = new URLSearchParams({
         nome,
         categoria,
         marca,
-        fornecedor
+    
       });
 
       // Realizando a requisição para buscar os produtos filtrados
@@ -76,7 +70,6 @@
         row.insertCell(1).textContent = produto.nome;
         row.insertCell(2).textContent = produto.categoria;
         row.insertCell(3).textContent = produto.marca;
-        row.insertCell(4).textContent = produto.fornecedor;
         row.insertCell(5).textContent = produto.quantidade;
       });
     });
@@ -96,7 +89,6 @@
         row.insertCell(1).textContent = produto.nome;
         row.insertCell(2).textContent = produto.categoria;
         row.insertCell(3).textContent = produto.marca;
-        row.insertCell(4).textContent = produto.fornecedor;
         row.insertCell(5).textContent = produto.quantidade;
       });
     }
