@@ -41,8 +41,11 @@
           <tr>
             <th>ID</th>
             <th>Cliente</th>
+            <th>ID Cliente</th>
             <th>Vendedor</th>
+            <th>ID Vendedor</th>
             <th>Produto</th>
+            <th>ID Produto</th>
             <th>Quantidade</th>
             <th>Valor</th>
             <th>Ações</th>
@@ -74,8 +77,11 @@
           row.innerHTML = `
             <td>${pedido.id_pedido}</td>
             <td>${pedido.cliente}</td>
+            <td>${pedido.id_cliente}</td>
             <td>${pedido.vendedor}</td>
+            <td>${pedido.id_vendedor}</td>
             <td>${pedido.produto}</td>
+            <td>${pedido.id_produto}</td>
             <td>${pedido.quantidade}</td>
             <td>${pedido.valor}</td>
             <td>
@@ -118,7 +124,63 @@
       }
     }
 
-    // Deletar pedido
+    async function editarPedido(id_pedido) {
+  alert(id_pedido);
+
+  // Pegando os valores dos inputs
+  let id_vendedor = document.getElementById('id_vendedor').value;
+  let id_cliente = document.getElementById('id_cliente').value;
+  let id_produto = document.getElementById('id_produto').value;
+  let quantidade = document.getElementById('quantidade').value;
+  let valor = document.getElementById('valor').value;
+
+  // Convertendo os valores para o tipo correto
+  id_cliente = parseInt(id_cliente);
+  id_vendedor = parseInt(id_vendedor);
+  id_produto = parseInt(id_produto);
+  quantidade = parseInt(quantidade);
+  valor = parseFloat(valor);
+
+  // Montando o objeto com os dados a serem enviados
+  const edicao = {
+    id_pedido,
+    id_vendedor,
+    id_cliente,
+    id_produto,
+    quantidade,
+    valor
+  };
+
+  // Exibindo o objeto para depuração
+  console.log(edicao);
+
+  try {
+    // Enviando a requisição PUT para o backend
+    const response = await fetch(`http://localhost:3000/pedidos/${id_pedido}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(edicao)
+    });
+
+    // Verificando se a resposta foi bem-sucedida
+    if (response.ok) {
+      alert('Pedido atualizado com sucesso!');
+      carregarPedidos(); // Atualiza a lista de pedidos
+    } else {
+      alert('Erro ao atualizar pedido.');
+    }
+  } catch (error) {
+    console.error('Erro na requisição:', error);
+    alert('Erro ao conectar com o servidor.');
+  }
+}
+
+    
+
+  
+      // Deletar pedido
     async function deletarPedido(id) {
       try {
         const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
