@@ -44,17 +44,36 @@ CREATE TABLE pedidos (
   FOREIGN KEY (id_produto) REFERENCES produtos(id_produto)
 );
 
--- Consulta para produtos abaixo do estoque mínimo
-SELECT nome, quantidade AS estoque
-FROM produtos
-WHERE quantidade <= 10 -- Produtos com estoque menor ou igual a 10
-ORDER BY quantidade ASC; -- Ordenados por quantidade em ordem crescente
+--Relatório dos Produtos Mais Vendidos
 
--- Consulta para contar número de produtos por categoria
-SELECT categoria, COUNT(*) AS total_produtos
+SELECT p.nome, SUM(ped.quantidade) AS total_vendido
+FROM pedidos ped
+JOIN produtos p ON ped.id_produto = p.id_produto
+GROUP BY p.nome
+ORDER BY total_vendido DESC;
+
+--Relatório de Produtos Comprados por Cliente
+
+SELECT c.nome AS cliente, p.nome AS produto, SUM(ped.quantidade) AS total_comprado
+FROM pedidos ped
+JOIN Clientes c ON ped.id_cliente = c.id_cliente
+JOIN produtos p ON ped.id_produto = p.id_produto
+GROUP BY c.nome, p.nome
+ORDER BY c.nome, total_comprado DESC;
+
+--Relatório de Consumo Médio do Cliente
+SELECT c.nome AS cliente, AVG(ped.quantidade) AS consumo_medio
+FROM pedidos ped
+JOIN Clientes c ON ped.id_cliente = c.id_cliente
+GROUP BY c.nome
+ORDER BY consumo_medio DESC;
+
+--Relatório de Produtos com Baixo Estoque
+SELECT nome, quantidade
 FROM produtos
-GROUP BY categoria -- Agrupa por categoria
-ORDER BY total_produtos DESC; -- Ordena pelo total em ordem decrescente
+WHERE quantidade <= 5 -- Defina o valor mínimo de estoque conforme necessário
+ORDER BY quantidade ASC;
+
 
 -- Inserir produtos de tecnologia
 INSERT IGNORE INTO produtos (id_produto, nome, descricao, categoria, marca, modelo, quantidade, valor)
