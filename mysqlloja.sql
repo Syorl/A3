@@ -2,13 +2,6 @@
 CREATE DATABASE IF NOT EXISTS mysqlloja;
 USE mysqlloja;
 
--- Tabela de Fornecedores
-CREATE TABLE IF NOT EXISTS Fornecedores (
-    id_fornecedor INT AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    cnpj VARCHAR(18) UNIQUE NOT NULL,
-    endereco VARCHAR(200)
-);
 
 -- Tabela de Produtos
 CREATE TABLE IF NOT EXISTS produtos (
@@ -62,23 +55,6 @@ SELECT categoria, COUNT(*) AS total_produtos
 FROM produtos
 GROUP BY categoria -- Agrupa por categoria
 ORDER BY total_produtos DESC; -- Ordena pelo total em ordem decrescente
-
--- Consulta para contar número de produtos por fornecedor
-SELECT f.nome AS fornecedor, COUNT(p.id_produto) AS total_produtos
-FROM Fornecedores f
-JOIN produtos p ON f.id_fornecedor = p.id_fornecedor -- Relaciona produtos com fornecedores
-GROUP BY f.nome -- Agrupa por nome do fornecedor
-ORDER BY total_produtos DESC; -- Ordena pelo total em ordem decrescente
-
-
--- Inserir fornecedores fictícios
-INSERT IGNORE INTO Fornecedores (nome, cnpj, endereco)
-VALUES
-('TechVantage', '11.222.333/0001-44', 'Rua Alfa, 100'),
-('GigaBytes', '22.333.444/0001-55', 'Rua Beta, 200'),
-('ProCircuit', '33.444.555/0001-66', 'Rua Gama, 300'),
-('SmartSolutions', '44.555.666/0001-77', 'Rua Delta, 400'),
-('OptiGear', '55.666.777/0001-88', 'Rua Épsilon, 500');
 
 -- Inserir produtos de tecnologia
 INSERT IGNORE INTO produtos (id_produto, nome, descricao, categoria, marca, modelo, quantidade, valor)
